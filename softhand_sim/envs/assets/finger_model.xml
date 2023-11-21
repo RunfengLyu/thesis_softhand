@@ -1,0 +1,239 @@
+<mujoco model ='soft_hand_fingers'>
+  <compiler angle="radian" autolimits="true"/>
+
+  <option gravity="0 0 -9.81" impratio="3"/>
+
+  <asset>
+    <material name="skin" specular="0.5" shininess="0.2" rgba="0.80937 0.80937 0.99937 1"/>
+  </asset>
+
+  <default>
+    <joint type="hinge" axis="0 1 0"  range="0 1.6" stiffness="3" damping="0.8" springref="0"/>
+    <geom type="capsule" size=".1" condim="4" solimp="0.9 0.95" solref="0.005" material="skin"/>
+    <tendon range="0 16" damping="13"/>
+    <position gear="3" ctrlrange="0 90" kp="30"/>
+    <site type="sphere" rgba="0.5 0.5 0.5 1"/>
+  </default>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" rgb1=".3 .3 .4" 
+    rgb2=".3 .3 .3" width="300" height="300" mark="edge" markrgb=".2 .3 .4"/>
+    <material name="grid" texture="grid" texrepeat="2 2" texuniform="true"
+    reflectance=".0001"/>
+  </asset>
+
+  <worldbody>
+    <!--<light name="top" diffuse=".2 .2 .2" pos="0 0 10" dir="0 0 -1"/>
+    <geom name="ground" type="plane" pos="0 0 -.8" size="2 2 .1" material="grid" solimp=".99 .99 .01" solref=".001 1"/> -->
+    <light directional='false' diffuse='.7 .7 .7' specular='0.03 0.03 0.03' pos='-1 -1.0 4.0' dir='1 1.0 -4'/>
+    <geom name='ground' size="15 15 0.25" pos="0 0 -1" type="plane" contype="1" conaffinity="0" material="groundplane" />
+    <camera name="fixed" pos="0 0 0.5" quat="0.92388 0.382683 0 0" />
+    <!-- Camera for the VIL paper -->
+    <camera name="vil_camera" pos="0 -1.2 1.2" quat="0.92388 0.382683 0 0" />
+
+    <!-- ======= TABLE ======= -->
+    <body name="table">
+        <!-- <geom size="0.5 0.5 0.025" type="plane" material="table2d" /> --> <!-- Plane has better contacts -->
+        <geom size="4 4 0.025" pos="0 0 -0.025" type="box" material="tablecube" />
+        <geom size="0.04 0.5" pos="0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" />
+        <geom size="0.04 0.5" pos="-0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" />
+        <geom size="0.04 0.5" pos="0.4 -0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" />
+        <geom size="0.04 0.5" pos="-0.4 -0.4 -0.501" quat="0 1 0 0" type="cylinder" contype="0" conaffinity="0" />
+    </body>
+    
+    <!-- ======= MOCAP ======= -->
+    <body name="vive_tracker" pos="0 -0.35 0.25" mocap="true">
+        <inertial pos="0 0 0" mass="0.064" diaginertia="1.70667e-05 1.70667e-05 1.70667e-05" />
+        <geom size="0.03 0.01" type="cylinder" contype="0" conaffinity="0" group="3" rgba="0.3 0.3 0.3 0.3" />
+    </body> 
+
+    
+    <!-- ======= HAND ======= -->
+    <body name="hand" pos="0 0 1" euler="0 -1 0" gravcomp="1">
+      <geom name="palm" type="ellipsoid" pos="-.15 0 0" size=".2 .4 .1" condim="4" material="skin"/>
+      <geom name="palm2" type="box" pos=".025 0 0" size="0.175 .4 .1" condim="4" material="skin"/>
+      <body name="palm_body" pos="-.15 0 0" euler="0 180 0">
+        <joint name="ipalm" stiffness="3"/>
+        <site name="ipalm_body" pos="-.15 0 0" size=".005 .005 .005"/>
+        <geom fromto="0 0 0 .2 0 0"/>
+      </body>  
+      <geom name="indexbone" fromto=".2 -.3 0 .6 -.33 0"/>
+      <body name="index1" pos=".6 -.33 0" euler="0 0 -.1" gravcomp="1">
+        <joint name="iMCP" stiffness="3"/>
+        <site name="iMCP_s" pos="-0.005 0.035 0" size=".005 .005 .005"/>
+        <geom fromto="0 0 0 .2 0 0"/>
+        <body name="index2" pos=".2 0 0" gravcomp="1">
+          <site name="iPIP_s" pos=".2 0 0" size=".005 .005 .005"/>
+          <joint name="iPIP" stiffness="3"/>
+          <geom fromto="0 0 0 .175 0 0"/>
+          <body name="index3" pos=".175 0 0" gravcomp="1">
+            <site name="iDIP_s" pos=".175 0 0" size=".005 .005 .005"/>
+            <joint name="iDIP" stiffness="3"/>
+            <geom fromto="0 0 0 .25 0 0"/>
+          </body>
+        </body>
+      </body>
+      <geom name="middlebone" fromto=".2 -.1 0 .65 -.11 0"/>
+      <body name="middle1" pos=".65 -.11 0" euler="0 0 0" gravcomp="1">
+        <joint name="mMCP"/>
+        <site name="mMCP_s" pos=".65 -.11 0" size=".005 .005 .005"/>
+        <geom fromto="0 0 0 .25 0 0"/>
+        <body name="middle2" pos=".25 0 0" gravcomp="1">
+          <joint name="mPIP"/>
+          <site name="mPIP_s" pos=".25 0 0" size=".005 .005 .005"/>
+          <geom fromto="0 0 0 .175 0 0"/>
+          <body name="middle3" pos=".175 0 0" gravcomp="1">
+            <joint name="mDIP"/>
+            <site name="mDIP_s" pos=".175 0 0" size=".005 .005 .005"/>
+            <geom fromto="0 0 0 .25 0 0"/>
+          </body>
+        </body>
+      </body>
+      <geom name="ringbone" fromto=".2 .1 0 .6 .11 0"/>
+      <body name="ring1" pos=".6 .11 0" euler="0 0 .1" gravcomp="1">
+        <joint name="rMCP"/>
+        <site name="rMCP_s" pos=".6 .11 0" size=".005 .005 .005"/>
+        <geom fromto="0 0 0 .2 0 0"/>
+        <body name="ring2" pos=".2 0 0" gravcomp="1">
+          <joint name="rPIP"/>
+          <site name="rPIP_s" pos=".2 0 0" size=".005 .005 .005"/>
+          <geom fromto="0 0 0 .175 0 0"/>
+          <body name="ring3" pos=".175 0 0" gravcomp="1">
+            <site name="rDIP_s" pos=".175 0 0" size=".005 .005 .005"/>
+            <joint name="rDIP"/>
+            <geom fromto="0 0 0 .25 0 0"/>
+          </body>
+        </body>
+      </body>
+      <geom name="littlebone" fromto=".2 .3 0 .45 .33 0"/>
+      <body name="little1" pos=".45 .33 0" euler="0 0 .2" gravcomp="1">
+        <joint name="lMCP"/>
+        <site name="lMCP_s" pos=".45 .33 0" size=".005 .005 .005"/>
+        <geom fromto="0 0 0 .2 0 0"/>
+        <body name="little2" pos=".2 0 0" gravcomp="1">
+          <joint name="lPIP"/>
+          <site name="lPIP_s" pos=".2 0 0" size=".005 .005 .005"/>
+          <geom fromto="0 0 0 .15 0 0"/>
+          <body name="little3" pos=".15 0 0" gravcomp="1">
+            <joint name="lDIP"/>
+            <site name="lDIP_s" pos=".15 0 0" size=".005 .005 .005"/>
+            <geom fromto="0 0 0 .25 0 0"/>
+          </body>
+        </body>
+      </body>
+      <body name="thumb0" pos="-.1 -.3 0" euler="0 0 0" gravcomp="1">
+        <joint name="thumbjoint0" axis="1 0 0" range="0 3"/>
+        <joint name="thumbjoint1" axis="0 0 1" range="-.5 3"/>
+        <body name="thumb1" pos="0 0 0" euler="0 0 -1" gravcomp="1">
+          <geom fromto="0 0 0 .45 0 0"/>
+          <body name="thumb2" pos=".45 0 0" euler=".62 0 0" gravcomp="1">
+            <joint name="tMCP"/>
+            <site name="tMCP_s" pos=".45 0 0" size=".005 .005 .005"/>
+            <geom fromto="0 0 0 .35 0 0"/>
+            <body name="thumb3" pos=".35 0 0" gravcomp="1">
+              <site name="tPIP_s" pos=".35 0 0" size=".005 .005 .005"/>
+              <joint name="tPIP"/>
+              <geom fromto="0 0 0 .25 0 0"/>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+    <!-- ======= DESTINATION ======= 
+    <site name="target" pos="-5 0.0 0.2" size="0.07" rgba="0 1 0 0.125" /> -->
+
+    <!-- ======= OBJECT ======= -->
+    <body name="Object" pos="-0.00 0.0 0.035" user="1001 0 2003 27 0 0 0.06 0 0">
+        <inertial pos="0 0 0" mass="0.179594" diaginertia="8.80012e-05 8.80012e-05 8.80012e-05" />
+        <joint name="OBJTx" pos="0 0 0" axis="1 0 0" type="slide" limited="false" damping="0" />
+        <joint name="OBJTy" pos="0 0 0" axis="0 1 0" type="slide" limited="false" damping="0" />
+        <joint name="OBJTz" pos="0 0 0" axis="0 0 1" type="slide" limited="false" damping="0" />
+        <joint name="OBJRx" pos="0 0 0" axis="1 0 0" limited="false" damping="0" />
+        <joint name="OBJRy" pos="0 0 0" axis="0 1 0" limited="false" damping="0" />
+        <joint name="OBJRz" pos="0 0 0" axis="0 0 1" limited="false" damping="0" />
+        <geom name="sphere" size="0.5" type="sphere" condim="4"/>
+    </body>
+  </worldbody>
+
+  <!-- ======= TENDON ======= -->
+  <tendon>
+    <fixed name="index_tendon">
+        <joint joint="iMCP" coef="1"/>
+        <joint joint="iPIP" coef="1"/>
+        <joint joint="iDIP" coef="1"/>
+    </fixed>
+    <fixed name="middle_tendon">
+        <joint joint="mMCP" coef="1"/>
+        <joint joint="mPIP" coef="1"/>
+        <joint joint="mDIP" coef="1"/>
+    </fixed>
+    <fixed name="ring_tendon">
+        <joint joint="rMCP" coef="1"/>
+        <joint joint="rPIP" coef="1"/>
+        <joint joint="rDIP" coef="1"/>
+    </fixed>
+    <fixed name="little_tendon">
+        <joint joint="lMCP" coef="1"/>
+        <joint joint="lPIP" coef="1"/>
+        <joint joint="lDIP" coef="1"/>
+    </fixed>
+    <fixed name="thumb_tendon" range="0 3">
+        <joint joint="thumbjoint1" coef="1"/>
+        <joint joint="tMCP" coef="1"/>
+        <joint joint="tPIP" coef="1"/>
+    </fixed>
+  </tendon>
+
+
+  <!-- ======= ACTUATOR ======= -->
+  <actuator>
+    <position name="act_index" tendon="index_tendon" gear="4" ctrlrange="0 90" kp="30"/>
+    <position name="act_middle" tendon="middle_tendon" gear="4" ctrlrange="0 90" kp="30"/>
+    <position name="act_ring" tendon="ring_tendon" gear="4" ctrlrange="0 90" kp="30"/>
+    <position name="act_little" tendon="little_tendon" gear="4" ctrlrange="0 90" kp="30"/>
+    <position name="act_thumb" tendon="thumb_tendon" gear="4" ctrlrange="0 90" kp="30"/>
+    <position name="act_thumb_base" joint="thumbjoint0"/>
+  </actuator>
+
+  <!-- ======= SENSOR ======= -->
+  <sensor>
+
+    <touch name="iMCP_s_frc" site="iMCP_s"/>
+    <touch name="iPIP_s_frc" site="iPIP_s"/>
+    <touch name="iDIP_s_frc" site="iDIP_s"/>
+
+    <touch name="mMCP_s_frc" site="mMCP_s"/>
+    <touch name="mPIP_s_frc" site="mPIP_s"/>
+    <touch name="mDIP_s_frc" site="mDIP_s"/>
+
+    <touch name="rMCP_s_frc" site="rMCP_s"/>
+    <touch name="rPIP_s_frc" site="rPIP_s"/>
+    <touch name="rDIP_s_frc" site="rDIP_s"/>
+
+    <touch name="lMCP_s_frc" site="lMCP_s"/>
+    <touch name="lPIP_s_frc" site="lPIP_s"/>
+    <touch name="lDIP_s_frc" site="lDIP_s"/>
+
+    <touch name="tMCP_s_frc" site="tMCP_s"/>
+    <touch name="tPIP_s_frc" site="tPIP_s"/>
+
+    <touch name="ipalm_body_s_frc" site="ipalm_body"/>
+
+  </sensor>
+
+  <contact>
+    <exclude body1="hand" body2="thumb1"/>
+  </contact>
+
+  <equality>
+    <weld body1="hand" body2="vive_tracker" solimp="0.9 0.94 0.001 0.5 2" solref="0.1 1"/>
+  </equality>
+
+
+  <include file='softhand_assets.xml'/>
+
+
+</mujoco>
+
+
+
