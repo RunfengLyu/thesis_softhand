@@ -118,6 +118,7 @@ class HandEnv(MujocoEnv, EzPickle):
         
         self._init_palm_middle_dif = self.compute_joint_difference("ipalm", "mMCP")
         self.start_time = time.time()
+        self.frames = []
 
         EzPickle.__init__(self, **kwargs)
 
@@ -168,7 +169,7 @@ class HandEnv(MujocoEnv, EzPickle):
             pixels = self.render()
             self.frames.append(pixels)
         truncated = 1
-        return obs, reward, done, truncated, {"end_time": end_time; "frames:", frames}
+        return obs, reward, done, truncated, {"end_time": end_time}
 
     def render(self, mode="human"):
         if self.viewer is None:
@@ -201,7 +202,8 @@ class HandEnv(MujocoEnv, EzPickle):
     def _get_info(self):
         return{
             "touch": self.data.sensordata.ravel(),
-            "distance_palm&ball": np.linalg.norm(self._hand_position-self._obj_position, ord = 1)
+            "distance_palm&ball": np.linalg.norm(self._hand_position-self._obj_position, ord = 1),
+            "frames":self.frames
         }
     
     def reset(self, seed=None, options=None):
