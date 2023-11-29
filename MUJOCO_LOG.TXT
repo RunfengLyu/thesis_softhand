@@ -1,0 +1,9 @@
+Mon Nov 27 16:23:32 2023
+WARNING: mju_openResource: unknown file '/envs/assets/finger_model.xml'
+
+Mon Nov 27 16:28:43 2023
+WARNING: mju_openResource: unknown file '/home/rlyv/softhand_sim/envs/assets/finger_model.xml'
+
+Wed Nov 29 17:18:56 2023
+WARNING: mju_openResource: unknown file '/home/rlyv/softhand_sim/envs/assets/finger_model.xml'
+
