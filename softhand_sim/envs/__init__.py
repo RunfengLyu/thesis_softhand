@@ -1,1 +1,1 @@
-from softhand_sim.envs.handenv import HandEnv
+from softhand_sim.envs.handenv_sensor import HandEnv

@@ -26,7 +26,7 @@ class HandEnv(MujocoEnv, EzPickle):
 
     def __init__(self, **kwargs):
 
-        observation_space = Box(low=-np.inf, high=np.inf, shape=(48,), dtype=np.float64)
+        observation_space = Box(low=-np.inf, high=np.inf, shape=(21,), dtype=np.float64)
         xml_file_path = path.join(
             path.dirname(path.realpath(__file__)),
             "assets/finger_model.xml",
@@ -51,25 +51,32 @@ class HandEnv(MujocoEnv, EzPickle):
         }
 
     def step(self, a):
-        
-        self.do_simulation(a, self.frame_skip)
+        reward = 0
+        terminated = True
+        truncated = True
         ob = self._get_obs()
-        
-        terminated = self.test_grasp_stability()
-        if terminated:
-            reward= 1
-        else:
-            reward = 0
-        if self.data.time > 2:
-            truncated = True
-        else:
-            truncated = False
-        if self.render_mode == "rgb_array":
-            frame = self.render()
-            media.show_image(frame)
+        if self.check_handobject_contact():
+            self.do_simulation(a, self.frame_skip)
+            ob = self._get_obs()
+            
+            terminated = self.test_grasp_stability()
+            if terminated:
+                reward= 1
+            else:
+                reward = 0
+            if self.data.time > 2:
+                truncated = True
+            else:
+                truncated = False
+            # if self.render_mode == "rgb_array":
+            #     frame = self.render()
+            #     media.show_image(frame)
 
-        # truncation=False as the time limit is handled by the `TimeLimit` wrapper added during `make`
-        return ob, reward, terminated, truncated, {}
+            # truncation=False as the time limit is handled by the `TimeLimit` wrapper added during `make`
+            return ob, reward, terminated, truncated, {}
+        else:
+            #print("Hand is not in contact with object")
+            return ob, reward, terminated, truncated, {}
     
     # def holdup(self):
     #     qpos = self.data.qpos
@@ -98,8 +105,8 @@ class HandEnv(MujocoEnv, EzPickle):
         return self._get_obs(),{}
 
     def _get_obs(self):
-        print(self.data.sensordata)
-        return np.concatenate([self.data.qpos, self.data.qvel]).ravel()
+        sensor_matrix = self.data.sensordata
+        return sensor_matrix
     
     # def rotate_hand(self):
     #     self.data.ctrl[-3] = -20
@@ -134,12 +141,31 @@ class HandEnv(MujocoEnv, EzPickle):
     #     return 
     
     def test_grasp_stability(self):
-        self.data.ctrl[-3] = -100
-        print("now test stability")
-        mujoco.mj_forward(self.model, self.data)
-        if(self.data.xpos[-1,2]>0.55):
+        self.data.ctrl[-2] = 2
+
+        diff_handball_x = self.data.xpos[-1, 0] - self.data.xpos[2, 0]
+        #print(diff_handball_x)
+        for i in range(1000):
+            mujoco.mj_step(self.model, self.data)
+        new_diff_handball_x = self.data.xpos[-1, 0] - self.data.xpos[2, 0]
+        # print(new_diff_handball_x)
+
+        if(abs(diff_handball_x - new_diff_handball_x) < 0.02):
             print("Grasp is stable")
+            if self.render_mode == "rgb_array":
+                frame = self.render()
+                media.show_image(frame)
             return True
         else:
             return False
+        
+    def check_handobject_contact(self):
+        sensordata = self._get_obs()
+        if np.all(sensordata==0):
+            return False
+        else:
+            return True
+            
+    
+        
     

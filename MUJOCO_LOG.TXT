@@ -1330,3 +1330,6 @@ WARNING: Nan, Inf or huge value in QACC at DOF 4. The simulation is unstable. Ti
 Wed Mar  6 03:02:15 2024
 WARNING: Nan, Inf or huge value in QACC at DOF 21. The simulation is unstable. Time = 0.0080.
 
+Fri Mar  8 03:32:27 2024
+WARNING: mju_openResource: unknown file '/home/rlyv/softhand_sim/softhand_sim/envs/assets/finger_model1.xml'
+
