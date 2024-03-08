@@ -21,7 +21,7 @@ class HandEnv(MujocoEnv, EzPickle):
             "rgb_array",
             "depth_array",
         ],
-        "render_fps": 250,
+        "render_fps": 5,
     }
 
     def __init__(self, **kwargs):
@@ -36,7 +36,7 @@ class HandEnv(MujocoEnv, EzPickle):
         MujocoEnv.__init__(
             self,
             xml_file_path,
-            2,
+            100,
             observation_space=observation_space,
             default_camera_config=DEFAULT_CAMERA_CONFIG,
             **kwargs,
@@ -47,7 +47,7 @@ class HandEnv(MujocoEnv, EzPickle):
                 "rgb_array",
                 "depth_array",
             ],
-            "render_fps": 250,
+            "render_fps": 5,
         }
 
     def step(self, a):
@@ -59,7 +59,7 @@ class HandEnv(MujocoEnv, EzPickle):
             self.do_simulation(a, self.frame_skip)
             ob = self._get_obs()
             
-            terminated = self.test_grasp_stability()
+            terminated = self.test_grasp_stability_disturbance()
             if terminated:
                 reward= 1
             else:
@@ -78,15 +78,7 @@ class HandEnv(MujocoEnv, EzPickle):
             #print("Hand is not in contact with object")
             return ob, reward, terminated, truncated, {}
     
-    # def holdup(self):
-    #     qpos = self.data.qpos
-    #     self.data.qvel[:] = 0
-    #     qvel = self.data.qvel
-    #     self.set_state(qpos, qvel)
-    #     if self.render_mode == "rgb_array":
-    #         frame = self.render()
-    #         media.show_image(frame)
-    #     return
+
 
     def reset(self,seed=None,options=None):
         qpos = self.init_qpos 
@@ -108,56 +100,75 @@ class HandEnv(MujocoEnv, EzPickle):
         sensor_matrix = self.data.sensordata
         return sensor_matrix
     
-    # def rotate_hand(self):
-    #     self.data.ctrl[-3] = -20
-
-    #     mujoco.mj_step(self.model, self.data,200)
-    #     if self.render_mode == "rgb_array":
-    #         frame = self.render()
-    #         media.show_image(frame)
-    #     print(self.data.xpos)
-    #     return 
-    
-    # def grasp(self):
+    def grasp(self):
        
-    #     self.data.ctrl[0] = -3
+        self.data.ctrl[0:5] = 2
         
-    #     mujoco.mj_step(self.model, self.data,50)
-    #     print("here",self.data.qpos, self.data.qvel)
-    #     if self.render_mode == "rgb_array":
-    #         frame = self.render()
-    #         media.show_image(frame)
-    #     #pos, vel = self.save_state()
-    #     return 
+        mujoco.mj_step(self.model, self.data,100)
+        #print("here",self.data.qpos, self.data.qvel)
+        if self.render_mode == "rgb_array":
+            frame = self.render()
+            media.show_image(frame)
+        #pos, vel = self.save_state()
+        return 
 
-
-    # def move_stick(self):
-    #     self.data.ctrl[-1] = 20
-
-    #     mujoco.mj_step(self.model, self.data)
-    #     if self.render_mode == "rgb_array":
-    #         frame = self.render()
-    #         media.show_image(frame)
-    #     return 
     
-    def test_grasp_stability(self):
-        self.data.ctrl[-2] = 2
+    def test_grasp_stability_handswing(self):
+        self.data.ctrl[-3] = 20
 
-        diff_handball_x = self.data.xpos[-1, 0] - self.data.xpos[2, 0]
-        #print(diff_handball_x)
-        for i in range(1000):
-            mujoco.mj_step(self.model, self.data)
-        new_diff_handball_x = self.data.xpos[-1, 0] - self.data.xpos[2, 0]
-        # print(new_diff_handball_x)
+        #print("now rotate hand")
 
-        if(abs(diff_handball_x - new_diff_handball_x) < 0.02):
+        mujoco.mj_step(self.model, self.data, 300)
+
+        if(self.data.xpos[-1, 2]-0.5>0.05 
+           and abs(self.data.xpos[-1,0]+0.2)<0.1 
+           and abs(self.data.xpos[-1,1]-0.1)<0.1):
             print("Grasp is stable")
             if self.render_mode == "rgb_array":
                 frame = self.render()
                 media.show_image(frame)
+
             return True
         else:
             return False
+        
+    def tet_grasp_stability_handforward(self):
+        self.data.ctrl[-3] = 20
+
+        diff_handball_x = self.data.xpos[-1, 0] - self.data.xpos[2, 0]
+            
+        mujoco.mj_step(self.model, self.data, 300)
+
+        new_diff_handball_x = self.data.xpos[-1, 0] - self.data.xpos[2, 0]
+
+        if(abs(new_diff_handball_x-diff_handball_x)<0.01):
+            print("Grasp is stable")
+            if self.render_mode == "rgb_array":
+                frame = self.render()
+                media.show_image(frame)
+
+            return True
+        else:
+            return False
+    
+    def test_grasp_stability_disturbance(self):
+        self.data.ctrl[-4] = 20
+        diff_handball_x = self.data.xpos[-1, 0] - self.data.xpos[2, 0]
+            
+        mujoco.mj_step(self.model, self.data, 300)
+
+        new_diff_handball_x = self.data.xpos[-1, 0] - self.data.xpos[2, 0]
+
+        if(abs(new_diff_handball_x-diff_handball_x)<0.01):
+            print("Grasp is stable")
+            if self.render_mode == "rgb_array":
+                frame = self.render()
+                media.show_image(frame)
+
+            return True
+        else:
+            return False
+    
         
     def check_handobject_contact(self):
         sensordata = self._get_obs()
@@ -165,7 +176,18 @@ class HandEnv(MujocoEnv, EzPickle):
             return False
         else:
             return True
+    
+    def test_object_move(self):
+        self.data.ctrl[-4] = 20
+        print("now test object move")
+        for i in range(300):
             
+            mujoco.mj_step(self.model, self.data)
+
+        if self.render_mode == "rgb_array":
+            frame = self.render()
+            media.show_image(frame)
+
     
         
     
