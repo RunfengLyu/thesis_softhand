@@ -29,7 +29,7 @@ class HandEnv(MujocoEnv, EzPickle):
         observation_space = Box(low=-np.inf, high=np.inf, shape=(48,), dtype=np.float64)
         xml_file_path = path.join(
             path.dirname(path.realpath(__file__)),
-            "assets/finger_model1.xml",
+            "assets/finger_model.xml",
         )
         EzPickle.__init__(self,  xml_file_path, **kwargs)
         
@@ -98,6 +98,7 @@ class HandEnv(MujocoEnv, EzPickle):
         return self._get_obs(),{}
 
     def _get_obs(self):
+        print(self.data.sensordata)
         return np.concatenate([self.data.qpos, self.data.qvel]).ravel()
     
     # def rotate_hand(self):
@@ -133,8 +134,8 @@ class HandEnv(MujocoEnv, EzPickle):
     #     return 
     
     def test_grasp_stability(self):
-        stable=False
         self.data.ctrl[-3] = -100
+        print("now test stability")
         mujoco.mj_forward(self.model, self.data)
         if(self.data.xpos[-1,2]>0.55):
             print("Grasp is stable")
