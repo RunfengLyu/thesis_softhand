@@ -19,7 +19,7 @@
   <worldbody>
     <light name="light" pos="0 0 1"/>
     <geom name="floor" type="plane" pos="0 0 -.5" size="2 2 .1" material="grid"/>
-    <site name="anchor" pos="0 0 .3" size=".01"/>
+    <site name="anchor" pos="0 0 .3" size=".01 0.01 0.01"/>
     <camera name="fixed" pos="0 -1.3 .5" xyaxes="1 0 0 0 1 2"/>
 
     <!-- <geom name="pole" type="cylinder" fromto=".3 0 -.5 .3 0 -.1" size=".04"/> -->
@@ -39,23 +39,18 @@
       </body>
     </body> -->
 
-    <body name="base">
-        <!-- <site name="base_site"/> -->
-        <geom fromto="0 0 -.5 0.1 0.1 0.1"/>
-        <inertial pos="0 0 0" mass="0.001" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
-        <!-- <joint name="base_move" axis="0 1 1" range="-50 50"/> -->
-        <body name="palm_body" pos="0.1 0.1 0.1" euler="0 -0.3 0">
-          <joint name="swing_palm" damping="0.1" axis="0 1 0" range="-50 50"/>
-          <!-- <joint name="move_palmX" type="slide" axis="1 0 0" range="-3 3"/>
-          <joint name="move_palmY" type="slide" axis="0 1 0" range="-3 3"/>  -->
-          <inertial pos="0 0 0" mass="0.09" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
-          <!-- <geom fromto="0 0 0 0.2 0.1 0.3"/> -->
-          <!-- <site name="ipalm_body" type="box" pos="0 0 -0.02" size="0.2 0.2 0.05" rgba="1 0 0 1"/> -->
-          <!-- <geom name="palm" type="sphere" pos="0.1 0 0.1" size=".05" condim="4" material="skin" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1"/> -->
-          <geom name="palm2" type="box" pos=".025 0 0.1" size="0.175 .4 .1" condim="4" material="skin" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1"/>
-          <!-- <geom fromto="0.2 0 0.1 0.3 0.2 0.4" size="0.05"/> -->
-        </body>
+    <body name="base" pos="-1.6 0.2 0" gravcomp="1">
+      <!-- <inertial pos="0 0 0" mass="0.001" diaginertia="8.80012e-05 8.80012e-05 8.80012e-05" /> -->
+      <site name="base_start" size="0.01 0.01 0.01"/>
+      <geom name="arm" type="cylinder" size="0.1" fromto="0 0 0 0 0 2"/>
+      <body name="base_hang" pos="0 0 2.1" gravcomp="1">
+        <geom name="hang_arm" fromto="0.2 0 -1 1.1 0 -1"/>
+        <site name="base_site" pos="0 0 0" size="0.01 0.01 0.01"/>
+        <site name="base_site_end" pos="1 0 0" size="0.01 0.01 0.01"/>
+        <joint name="swing_upper_hang" pos="0 0 0" type="slide" damping="0.1" axis="0 0 1" range="-3 3"/>
+      </body>
     </body>
+
 
   </worldbody>
 
@@ -65,7 +60,7 @@
     <motor name="my_motor3" joint="swing3" gear="1"/> -->
     <!-- <motor name="my_motor4" joint="swing_index" gear="1"/> -->
     <!-- <position name="act_index" tendon="thumb_tendon" gear="4" ctrlrange="0 90" kp="30"/> -->
-    <motor name="my_motor5" joint="swing_palm" gear="1"/>
+    <motor name="my_motor5" joint="swing_upper_hang" gear="1"/>
     
     <!-- <motor name="my_motor6" joint="base_move" gear="1"/> -->
   </actuator>
@@ -96,4 +91,5 @@
     <!-- <joint joint1="base_move" joint2="tPIP"/> -->
     <!-- <weld body1="thumb0" body2="base"/> -->
   </equality>
+  <include file='softhand_assets.xml'/>
 </mujoco>
