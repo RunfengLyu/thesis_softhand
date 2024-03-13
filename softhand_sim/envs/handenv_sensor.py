@@ -129,16 +129,6 @@ class HandEnv(MujocoEnv, EzPickle):
         else:
             return True
     
-    # def test_object_move(self):
-    #     self.data.ctrl[-4] = 20
-    #     print("now test object move")
-    #     for i in range(300):
-            
-    #         mujoco.mj_step(self.model, self.data)
-
-    #     if self.render_mode == "rgb_array":
-    #         frame = self.render()
-    #         media.show_image(frame)
     def test_swing_hang(self):
         #self.data.ctrl[3] =100
         #self.data.ctrl[4] =20

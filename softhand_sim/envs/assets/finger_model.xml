@@ -30,11 +30,8 @@
 
 
   <worldbody>
-    <!--<light name="top" diffuse=".2 .2 .2" pos="0 0 10" dir="0 0 -1"/>
-    <geom name="ground" type="plane" pos="0 0 -.8" size="2 2 .1" material="grid" solimp=".99 .99 .01" solref=".001 1"/> -->
     <light directional='true' diffuse='.7 .7 .7' specular='0.03 0.03 0.03' pos='-1 -1.0 4.0' dir='1 1.0 -4'/>
     <geom name='ground' size="15 15 0.25" pos="0 0 -1" type="plane" material="groundplane" />
-    <!-- <camera name="fixed" pos="0 0 5" quat="0.92388 0.382683 0 0" fovy="45" /> -->
     <camera name="track_hand" mode="targetbody" target="base_link_hand" pos="0 -5 4"/>
     <!-- Camera for the VIL paper -->
     <!-- <camera name="vil_camera" pos="0 -1.2 1.2" quat="0.92388 0.382683 0 0" /> -->
@@ -48,17 +45,11 @@
         <geom size="0.04 0.5" pos="0.4 -0.4 -0.501" quat="0 1 0 0" type="cylinder"/>
         <geom size="0.04 0.5" pos="-0.4 -0.4 -0.501" quat="0 1 0 0" type="cylinder"/>
     </body>
-    
-    <!-- ======= MOCAP ======= -->
-    <!-- <body name="vive_tracker" pos="1 1 0.25" mocap="true">
-        <inertial pos="0 0 0" mass="0.064" diaginertia="1.70667e-05 1.70667e-05 1.70667e-05" />
-        <geom size="0.5 0.5" type="cylinder" contype="0" conaffinity="0" group="3" rgba="0 0 1 1" />
-    </body>  -->
+  
 
 
     <!-- ======= BASE ======= -->
     <body name="base" pos="0 0 0">
-      <!-- <inertial pos="0 0 0" mass="0.01" diaginertia="8.18599e-007 7.95693e-007 3.06254e-007"/> -->
       <geom name="frameZ1" type="capsule" size="0.1" fromto="-3 -3 0 -3 -3 4"/>
       <geom name="frameZ2" type="capsule" size="0.1" fromto="-3 3 0 -3 3 4"/>
       <geom name="frameZ3" type="capsule" size="0.1" fromto="3 -3 0 3 -3 4"/>
@@ -261,38 +252,6 @@
         <joint joint="tDIP" coef="0.0071"/>
     </fixed>
 
-    <!-- <spatial name="tendon_base" limited="true" range="0 2"> -->
-      <!-- <site site="starting_site"/>
-      <geom geom="arm"/> -->
-      <!-- <site site="base_site"/> -->
-      <!-- <site site="ipalm_body"/> -->
-      <!-- <site site="base_hand_site"/> -->
-      <!-- <pulley divisor="2"/>
-      <site site="base_hand_site"/>
-      <geom geom="palm"/>
-      <site site="ipalm_body"/>
-      <pulley divisor="2"/>
-      <site site="base_hand_site"/>
-      <site site="i_bone_s"/>
-      <pulley divisor="2"/>
-      <site site="base_hand_site"/>
-      <site site="m_bone_s"/>
-      <pulley divisor="2"/>
-      <site site="base_hand_site"/>
-      <site site="r_bone_s"/>
-      <pulley divisor="2"/>
-      <site site="base_hand_site"/>
-      <site site="l_bone_s"/>
-      <pulley divisor="2"/>
-      <site site="base_hand_site"/>
-      <site site="t_bone_s"/> -->
-    <!-- </spatial> -->
-    <!-- <spatial name="base_site_tendon">
-      <site site="base_start"/>
-      <site site="base_site"/>
-      <site site="base_site_end"/>
-    </spatial> -->
-
   </tendon>
 
 
@@ -303,8 +262,6 @@
     <position name="act_ring" tendon="ring_tendon" gear="6" ctrlrange="0 90" kp="90"/>
     <position name="act_little" tendon="little_tendon" gear="6" ctrlrange="0 90" kp="90"/>
     <position name="act_thumb" tendon="thumb_tendon" gear="6" ctrlrange="0 90" kp="90"/>
-    <!-- <position name="act_base" tendon="base_site_tendon" gear="6" ctrlrange="0 90" kp="90"/> -->
-    <!-- <position name="act_base" tendon="tendon_base" gear="6" ctrlrange="0 90" kp="90"/> -->
     <motor name="base_hangZup" joint="hang_moveZup" gear="4" ctrlrange="-100 100"/>
     <motor name="base_hangYup" joint="hang_moveYup" gear="4" ctrlrange="-100 100"/>
     <motor name="base_hangXup" joint="hang_moveXup" gear="4" ctrlrange="-100 100"/>
@@ -313,9 +270,6 @@
     <motor name="base_rotateX" joint="swing_handX" gear="10" ctrlrange="-200 200"/>
     <motor name="base_rotateY" joint="swing_handY" gear="10" ctrlrange="-200 200"/> 
     <motor name="base_rotateZ" joint="swing_handZ" gear="4" ctrlrange="-200 200"/>
-    <!-- <motor name="base_moveX" joint="move_handX" gear="1" ctrlrange="-0.5 0.5"/>
-    <motor name="base_moveY" joint="move_handY" gear="1" ctrlrange="-0.5 0.5"/>
-    <motor name="base_moveZ" joint="move_handZ" gear="1" ctrlrange="-0.5 0.5"/> -->
   </actuator>
 
   <!-- ======= SENSOR ======= -->
