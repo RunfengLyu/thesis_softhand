@@ -32,7 +32,7 @@
   <worldbody>
     <light directional='true' diffuse='.7 .7 .7' specular='0.03 0.03 0.03' pos='-1 -1.0 4.0' dir='1 1.0 -4'/>
     <geom name='ground' size="15 15 0.25" pos="0 0 -1" type="plane" material="groundplane" />
-    <camera name="track_hand" mode="targetbody" target="base_link_hand" pos="0 -5 4"/>
+    <camera name="track_hand" mode="targetbody" target="base_link_hand" pos="3 -2 1"/>
     <!-- Camera for the VIL paper -->
     <!-- <camera name="vil_camera" pos="0 -1.2 1.2" quat="0.92388 0.382683 0 0" /> -->
 
@@ -63,16 +63,16 @@
         <inertial pos="0 0 0" mass="0.002" diaginertia="8.18599e-007 5.95693e-007 3.06254e-007"/>
         <geom name="hang_arm_left" fromto="0 0 0 0 5.8 0"/>
         <geom name="hang_arm_right" fromto="6 0 0 6 5.8 0"/>
-        <joint name="hang_moveZup" pos="0 0 0" type="slide" damping="0.1" axis="0 0 1" range="-3 3"/>
+        <joint name="hang_moveZup" pos="0 0 0" type="slide" damping="0.1" axis="0 0 1" range="-0.05 3"/>
         <body name="Y_hang" pos="0 3 0">
           <inertial pos="0 0 0" mass="0.0005" diaginertia="5.18599e-007 7.95693e-007 3.06254e-007"/>
           <geom name="hang_arm_left2right" fromto="0.1 0 0 5.9 0 0"/>
           <joint name="hang_moveYup" pos="0 0 0" type="slide" damping="0.1" axis="0 1 0" range="-1.5 1.5"/>
           <body name="X_hang" pos="3 0 0">
             <inertial pos="0 0 0" mass="0.0005" diaginertia="5.18599e-007 7.95693e-007 3.06254e-007"/>
-            <geom name="hang_arm_up2down" fromto="0 0 0 0 0 -1"/>
+            <geom name="hang_arm_up2down" fromto="0 0 0 0 0 -1.4"/>
             <joint name="hang_moveXup" pos="0 0 0" type="slide" damping="0.1" axis="1 0 0" range="-1.5 1.5"/>
-            <body name="base_link_hand" pos="0 0 -1">
+            <body name="base_link_hand" pos="0 0 -1.4">
               <geom type="capsule" size="0.1" fromto="0 0 0 0.25 0 0"/>
               <inertial pos="0 0 0" mass="0.002" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
               <site name="base_hand_site" size="0.01 0.01 0.01"/>
@@ -218,7 +218,7 @@
         <joint name="OBJRx" pos="0 0 0" axis="1 0 0" limited="false" damping="0" />
         <joint name="OBJRy" pos="0 0 0" axis="0 1 0" limited="false" damping="0" />
         <joint name="OBJRz" pos="0 0 0" axis="0 0 1" limited="false" damping="0" />
-        <geom name="object" size="0.3 0.3 0.3" type="box" condim="4" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" friction="0.8 0.005 0.0001"/>
+        <geom name="object" size="0.3 0.3 0.3" type="box" condim="4" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" friction="5 0.001 0.001"/>
     </body>
 
 
@@ -262,9 +262,9 @@
     <position name="act_ring" tendon="ring_tendon" gear="6" ctrlrange="0 90" kp="90"/>
     <position name="act_little" tendon="little_tendon" gear="6" ctrlrange="0 90" kp="90"/>
     <position name="act_thumb" tendon="thumb_tendon" gear="6" ctrlrange="0 90" kp="90"/>
-    <motor name="base_hangZup" joint="hang_moveZup" gear="4" ctrlrange="-100 100"/>
-    <motor name="base_hangYup" joint="hang_moveYup" gear="4" ctrlrange="-100 100"/>
-    <motor name="base_hangXup" joint="hang_moveXup" gear="4" ctrlrange="-100 100"/>
+    <motor name="base_hangZup" joint="hang_moveZup" gear="100" ctrlrange="-1000 1000"/>
+    <motor name="base_hangYup" joint="hang_moveYup" gear="20" ctrlrange="-200 200"/>
+    <motor name="base_hangXup" joint="hang_moveXup" gear="20" ctrlrange="-200 200"/>
     <!-- <motor name="object_moveX" joint="OBJTx" ctrlrange="-1 1"> -->
     <!-- <motor name="object_moveY" joint="OBJTy" ctrlrange="-1 1"/> -->
     <motor name="base_rotateX" joint="swing_handX" gear="10" ctrlrange="-200 200"/>

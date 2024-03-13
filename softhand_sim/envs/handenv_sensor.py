@@ -51,15 +51,15 @@ class HandEnv(MujocoEnv, EzPickle):
         }
         self.sensor_mean_weight = 1e-2
         self.sensor_std_weight = 1e-3
-
+    def my_name(self):
+        print("yes")
     def step(self, a):
         # print("step")
         reward = 0.5
         terminated = False
         truncated = False
         ob = self._get_obs()
-
-        a[5] = 0
+        a[5]=0
         self.do_simulation(a, self.frame_skip)
         # print("first grasp")
         # if self.render_mode == "rgb_array":
@@ -77,9 +77,9 @@ class HandEnv(MujocoEnv, EzPickle):
             #     frame = self.render()
             #     media.show_image(frame)
 
-            if self.render_mode == "rgb_array":
-                frame = self.render()
-                media.show_image(frame)
+            # if self.render_mode == "rgb_array":
+            #     frame = self.render()
+            #     media.show_image(frame)
 
             # truncation=False as the time limit is handled by the `TimeLimit` wrapper added during `make`
             return ob, reward, terminated, truncated, {}
@@ -91,15 +91,20 @@ class HandEnv(MujocoEnv, EzPickle):
 
 
     def reset(self,seed=None,options=None):
-        qpos = self.init_qpos 
-        # qpos[4] = self.init_qpos[1]+ self.np_random.uniform(
-        #     size=1, low=-0.3, high=0.3
-        # )
-        # qpos[5] = self.init_qpos[2]+ self.np_random.uniform(
-        #     size=1, low=-0.3, high=0.3
-        # )
-        qvel = self.init_qvel
-        self.set_state(qpos, qvel)
+        while not self.check_handobject_contact():
+            qpos = self.init_qpos 
+            qpos[0] = self.init_qpos[0]+ self.np_random.uniform(
+                size=1, low=-0.05, high=0
+            )
+            qpos[1] = self.init_qpos[1]+ self.np_random.uniform(
+                size=1, low=-0.05, high=0.05
+            )
+            qpos[2] = self.init_qpos[2]+ self.np_random.uniform(
+                size=1, low=-0.05, high=0.05
+            )
+            qvel = self.init_qvel
+            self.set_state(qpos, qvel)
+
         # if self.render_mode == "rgb_array":
         #     frame = self.render()
         #     media.show_image(frame)
@@ -130,15 +135,20 @@ class HandEnv(MujocoEnv, EzPickle):
             return True
     
     def test_swing_hang(self):
+        # self.data.ctrl[5] = 500
+        # self.data.ctrl[6] = 200
+        # self.data.ctrl[7] = 200
         #self.data.ctrl[3] =100
         #self.data.ctrl[4] =20
-        self.data.ctrl[5] =100
+        self.data.ctrl[5] =500
 
-        if self.render_mode == "rgb_array":
-            frame = self.render()
-            media.show_image(frame)
-        mujoco.mj_step(self.model, self.data,100)
+        # if self.render_mode == "rgb_array":
+        #     frame = self.render()
+        #     media.show_image(frame)
+        mujoco.mj_step(self.model, self.data,200)
         print("hand up")
+        print(self.data.xpos[7, 2])
+        print(self.data.xpos[-1, 2])
         if self.render_mode == "rgb_array":
             frame = self.render()
             media.show_image(frame)
@@ -146,13 +156,14 @@ class HandEnv(MujocoEnv, EzPickle):
 
     
     def test_grasp_stability_hand_moveup(self):
-        self.data.ctrl[5] = 50
+        self.data.ctrl[5] = 700
         reward = -1
-        hand_z_old = self.data.xpos[3, 2]
+        hand_z_old = self.data.xpos[7, 2]
         ball_z_old = self.data.xpos[-1, 2]
-        # if self.render_mode == "rgb_array":
-        #     frame = self.render()
-        #     media.show_image(frame)
+        print("before moving up")
+        if self.render_mode == "rgb_array":
+            frame = self.render()
+            media.show_image(frame)
 
         mujoco.mj_step(self.model, self.data, 400)
         # print("after hand move")
@@ -160,9 +171,9 @@ class HandEnv(MujocoEnv, EzPickle):
         #     frame = self.render()
         #     media.show_image(frame)
 
-        hand_z_new = self.data.xpos[3, 2]
+        hand_z_new = self.data.xpos[7, 2]
         ball_z_new = self.data.xpos[-1, 2]
-        if abs(hand_z_new - hand_z_old) <0.05:
+        if abs(hand_z_new - hand_z_old) <0.05 and abs(ball_z_new - ball_z_old) <0.05:
             return reward
 
         else:
