@@ -4,4 +4,6 @@ print("yes")
 register(
     id="softhand_sim/SofthandTest-v0",
     entry_point="softhand_sim.envs:HandEnv",
+    max_episode_steps=5,
+    reward_threshold=100.0
 )

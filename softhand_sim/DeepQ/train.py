@@ -1,14 +1,19 @@
-from DeepQ.Qnet import DQN
+from softhand_sim.DeepQ.Qnet import DQN
 import gymnasium
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from DeepQ.memory import ReplayMemory
+from softhand_sim.DeepQ.memory import ReplayMemory
 import random
 import math
+import numpy as np
 from collections import namedtuple
 from itertools import count
+from gymnasium.wrappers import TimeLimit
+import softhand_sim
 env = gymnasium.make('softhand_sim/SofthandTest-v0', render_mode='rgb_array')
+env = TimeLimit(env, max_episode_steps=30)
+wrapped_env = gymnasium.wrappers.RecordEpisodeStatistics(env, 100)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -38,13 +43,11 @@ target_net = DQN(n_observations, n_actions).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 
 optimizer = optim.AdamW(policy_net.parameters(), lr=LR, amsgrad=True)
-memory = ReplayMemory(10000)
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
-
+memory = ReplayMemory(10000)
 
 steps_done = 0
-
 
 def select_action(state):
     global steps_done
@@ -60,7 +63,6 @@ def select_action(state):
             return policy_net(state).max(1).indices.view(1, 1)
     else:
         return torch.tensor([[env.action_space.sample()]], device=device, dtype=torch.long)
-
 
 episode_durations = []
 

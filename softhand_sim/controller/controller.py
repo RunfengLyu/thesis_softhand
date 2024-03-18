@@ -1,18 +1,26 @@
 class PIDController:
-    def __init__(self, kp, ki, kd):
+    def __init__(self, kp, ki, kd, max_out=None):
         self.kp = kp
         self.ki = ki
         self.kd = kd
-        self.error_sum = 0
-        self.prev_error = 0
+        self.max_out = max_out
+        self.cumulative_error = 0
+        self.previous_error = 0
 
-    def calculate(self, setpoint, feedback, dt):
-        error = setpoint - feedback
-        self.error_sum += error * dt
-        error_diff = (error - self.prev_error) / dt
+    def reset(self):
+        self.cumulative_error = 0
+        self.previous_error = 0
 
-        output = self.kp * error + self.ki * self.error_sum + self.kd * error_diff
+    def step(self, setpoint, current_value):
+        error = setpoint - current_value
+        self.cumulative_error += error
+        derivative_error = error - self.previous_error
 
-        self.prev_error = error
+        output = self.kp * error + self.ki * self.cumulative_error + self.kd * derivative_error
+
+        if self.max_out is not None:
+            output = max(min(output, self.max_out), -self.max_out)
+
+        self.previous_error = error
 
         return output
