@@ -3,7 +3,7 @@ from os import path
 import gymnasium as gym
 from gymnasium.utils.ezpickle import EzPickle
 from gymnasium.envs.mujoco.mujoco_env import MujocoEnv
-from gymnasium.spaces import Box
+from gymnasium.spaces import Box, Discrete
 import mediapy as media
 import mujoco
 from softhand_sim.controller.controller import PIDController
@@ -108,81 +108,72 @@ class HandEnv(MujocoEnv, EzPickle):
             "condition15": (self.data.geom('thumb2g').id,self.data.geom('object').id),
             "condition16": (self.data.geom('thumb3g').id,self.data.geom('object').id)
         }
+        self.action_space = Discrete(2)
 
     def step(self, a):
-        reward = 0.5
+        reward = 1
         terminated = False
         truncated = False
         ob = self._get_obs()
         hand_z_old = self.data.xpos[7, 2]
         ball_z_old = self.data.xpos[-1, 2]
+        self.data.ctrl[-2] = -50
         #print("before a step touch:")
         # if self.render_mode == "rgb_array":
         #     frame = self.render()
         #     media.show_image(frame)
-        a[-2] = a[-2] -50
+        # a[-2] = a[-2] -50
         # print("action", a)
         # print(ob)
-        self.do_simulation(a, self.frame_skip)
+        #self.do_simulation(a, self.frame_skip)
 
-        if self.check_handobject_contact():
-
-            #grasp more
-            # self.data.ctrl[0:5] = 1.5
-            # mujoco.mj_step(self.model, self.data,20)
-
+        #grasping step
+        if a == 0:
+            self.data.ctrl[0:5] = self.data.ctrl[0:5] + 0.1
+            
+            mujoco.mj_step(self.model, self.data,50)
             ob = self._get_obs()
-            # print("after step and in contact")
-            # print(ob)
             reward = reward*(self.sensor_mean_weight * np.mean(ob[0:20]))
-            # if reward > 500:
-            #     print(self.data.contact)
-
-            #reward = min(reward, 5)
-            #print("touch reward: ", reward)
-            if reward> 500:
-                if self.render_mode == "rgb_array":
+            print("grasping step")
+            if self.render_mode == "rgb_array":
                     frame = self.render()
                     media.show_image(frame)
-
-            hand_z_new = self.data.xpos[7, 2]
-            ball_z_new = self.data.xpos[-1, 2]
-            
-
-            if hand_z_new - hand_z_old<0.05:
-                # print("hand down")
-                # if self.render_mode == "rgb_array":
-                #     frame = self.render()
-                #     media.show_image(frame)
-                info = {"reward_info": reward}
-                return ob, reward, terminated, truncated, info 
-            elif hand_z_new-hand_z_old > 0.05 and ((ball_z_new - ball_z_old) / (hand_z_new - hand_z_old))>0.9:
-                reward = reward+((ball_z_new - ball_z_old) / (hand_z_new - hand_z_old))*10
-                terminated = True
-                # print("good grasp")
-                # if self.render_mode == "rgb_array":
-                #     frame = self.render()
-                #     media.show_image(frame)
+            if self.check_handobject_contact():
                 info = {"reward_info": reward}
                 return ob, reward, terminated, truncated, info
             else:
-                # print("unstable grasp")
-                # if self.render_mode == "rgb_array":
-                #     frame = self.render()
-                #     media.show_image(frame)
-                reward = reward+((ball_z_new - ball_z_old) / (hand_z_new - hand_z_old))
+                reward = -0.5
+                terminated = True
                 info = {"reward_info": reward}
-                return ob, reward, terminated, truncated, info  
-
-        else:
-            #print("not in contact after step")
-            terminated = True
-            reward = -0.5
-            info = {"case": "case0", "reward_info": reward}
-            return ob, reward, terminated, truncated, info   
+                return ob, reward, terminated, truncated, info
 
 
-            
+        elif a == 1:
+            self.data.ctrl[5] = 50
+            mujoco.mj_step(self.model, self.data,50)
+            print("lifting step")
+            if self.render_mode == "rgb_array":
+                    frame = self.render()
+                    media.show_image(frame)
+            ball_z_new = self.data.xpos[-1, 2]
+            ob = self._get_obs()
+            if self.check_handobject_contact():
+                if ball_z_new - ball_z_old > 0.5:
+                    reward = (ball_z_new - ball_z_old)*10 +reward*(self.sensor_mean_weight * np.mean(ob[0:20]))
+                    terminated=True
+                    info = {"reward_info": reward}
+                    return ob, reward, terminated, truncated, info
+                else:
+                    reward = (ball_z_new - ball_z_old) +reward*(self.sensor_mean_weight * np.mean(ob[0:20]))
+                    info = {"reward_info": reward}
+                    return ob, reward, terminated, truncated, info
+            else:
+                reward = -0.5
+                terminated = True
+                info = {"reward_info": reward}
+                return ob, reward, terminated, truncated, info
+
+   
 
     def reset(self,seed=None,options=None):
         self._reset_hand_pose()
@@ -193,7 +184,7 @@ class HandEnv(MujocoEnv, EzPickle):
             # if self.render_mode == "rgb_array":
             #     frame = self.render()
             #     media.show_image(frame)
-        #print("reset done")
+        print("reset done")
         # print(self.data.sensordata)
         # if self.render_mode == "rgb_array":
         #     frame = self.render()
@@ -219,17 +210,17 @@ class HandEnv(MujocoEnv, EzPickle):
         mujoco.mj_step(self.model, self.data)
         qpos = self.init_qpos 
         qpos[1] = self.init_qpos[1]+ self.np_random.uniform(
-            size=1, low=-0.2, high=0.2
+            size=1, low=-0.1, high=0.1
         )
         qpos[2] = self.init_qpos[2]+ self.np_random.uniform(
-            size=1, low=-0.2, high=0.2
+            size=1, low=-0.1, high=0.1
         )
-        qpos[3] = self.init_qpos[3]+ self.np_random.uniform(
-            size=1, low=-0.3, high=0.3
-        )
-        qpos[5] = self.init_qpos[5]+ self.np_random.uniform(
-            size=1, low=-0.3, high=0.3
-        )
+        # qpos[3] = self.init_qpos[3]+ self.np_random.uniform(
+        #     size=1, low=-0.3, high=0.3
+        # )
+        # qpos[5] = self.init_qpos[5]+ self.np_random.uniform(
+        #     size=1, low=-0.3, high=0.3
+        # )
         qvel = self.init_qvel
         self.set_state(qpos, qvel)
 
