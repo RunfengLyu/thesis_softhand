@@ -53,6 +53,61 @@ class HandEnv(MujocoEnv, EzPickle):
         self.sensor_mean_weight = 0.1
         self.sensor_std_weight = 0.01
         self.controller = PIDController(0.1, 0.1, 0.1, 400)
+        self.handtable_contact_conditions = {
+            "condition0": (self.data.geom('palm2').id,self.data.geom('table_surface').id),
+            "condition1": (self.data.geom('palm').id, self.data.geom('table_surface').id),
+            "condition2": (self.data.geom('index1g').id, self.data.geom('table_surface').id),
+            "condition3": (self.data.geom('index2g').id,self.data.geom('table_surface').id),
+            "condition4": (self.data.geom('index3g').id,self.data.geom('table_surface').id),
+            "condition5": (self.data.geom('middle1g').id,self.data.geom('table_surface').id),
+            "condition6": (self.data.geom('middle2g').id,self.data.geom('table_surface').id),
+            "condition7": (self.data.geom('middle3g').id,self.data.geom('table_surface').id),
+            "condition8": (self.data.geom('ring1g').id,self.data.geom('table_surface').id),
+            "condition9": (self.data.geom('ring2g').id,self.data.geom('table_surface').id),
+            "condition10": (self.data.geom('ring3g').id,self.data.geom('table_surface').id),
+            "condition11": (self.data.geom('little1g').id,self.data.geom('table_surface').id),
+            "condition12": (self.data.geom('little2g').id,self.data.geom('table_surface').id),
+            "condition13": (self.data.geom('little3g').id,self.data.geom('table_surface').id),
+            "condition14": (self.data.geom('thumb1g').id,self.data.geom('table_surface').id),
+            "condition15": (self.data.geom('thumb2g').id,self.data.geom('table_surface').id),
+            "condition16": (self.data.geom('thumb3g').id,self.data.geom('table_surface').id),
+            "condition17": (self.data.geom('palm2').id,self.data.geom('table_surfacebase').id),
+            "condition18": (self.data.geom('palm').id,self.data.geom('table_surfacebase').id),
+            "condition19": (self.data.geom('index1g').id,self.data.geom('table_surfacebase').id),
+            "condition20": (self.data.geom('index2g').id,self.data.geom('table_surfacebase').id),
+            "condition21": (self.data.geom('index3g').id,self.data.geom('table_surfacebase').id),
+            "condition22": (self.data.geom('middle1g').id,self.data.geom('table_surfacebase').id),
+            "condition23": (self.data.geom('middle2g').id,self.data.geom('table_surfacebase').id),
+            "condition24": (self.data.geom('middle3g').id,self.data.geom('table_surfacebase').id),
+            "condition25": (self.data.geom('ring1g').id,self.data.geom('table_surfacebase').id),
+            "condition26": (self.data.geom('ring2g').id,self.data.geom('table_surfacebase').id),
+            "condition27": (self.data.geom('ring3g').id,self.data.geom('table_surfacebase').id),
+            "condition28": (self.data.geom('little1g').id,self.data.geom('table_surfacebase').id),
+            "condition29": (self.data.geom('little2g').id,self.data.geom('table_surfacebase').id),
+            "condition30": (self.data.geom('little3g').id,self.data.geom('table_surfacebase').id),
+            "condition31": (self.data.geom('thumb1g').id,self.data.geom('table_surfacebase').id),
+            "condition32": (self.data.geom('thumb2g').id,self.data.geom('table_surfacebase').id),
+            "condition33": (self.data.geom('thumb3g').id,self.data.geom('table_surfacebase').id)
+        }
+        self.handobject_contact_conditions = {
+            "condition0": (self.data.geom('palm2').id,self.data.geom('object').id),
+            "condition1": (self.data.geom('palm').id, self.data.geom('object').id),
+            "condition2": (self.data.geom('index1g').id, self.data.geom('object').id),
+            "condition3": (self.data.geom('index2g').id,self.data.geom('object').id),
+            "condition4": (self.data.geom('index3g').id,self.data.geom('object').id),
+            "condition5": (self.data.geom('middle1g').id,self.data.geom('object').id),
+            "condition6": (self.data.geom('middle2g').id,self.data.geom('object').id),
+            "condition7": (self.data.geom('middle3g').id,self.data.geom('object').id),
+            "condition8": (self.data.geom('ring1g').id,self.data.geom('object').id),
+            "condition9": (self.data.geom('ring2g').id,self.data.geom('object').id),
+            "condition10": (self.data.geom('ring3g').id,self.data.geom('object').id),
+            "condition11": (self.data.geom('little1g').id,self.data.geom('object').id),
+            "condition12": (self.data.geom('little2g').id,self.data.geom('object').id),
+            "condition13": (self.data.geom('little3g').id,self.data.geom('object').id),
+            "condition14": (self.data.geom('thumb1g').id,self.data.geom('object').id),
+            "condition15": (self.data.geom('thumb2g').id,self.data.geom('object').id),
+            "condition16": (self.data.geom('thumb3g').id,self.data.geom('object').id)
+        }
 
     def step(self, a):
         reward = 0.5
@@ -61,11 +116,13 @@ class HandEnv(MujocoEnv, EzPickle):
         ob = self._get_obs()
         hand_z_old = self.data.xpos[7, 2]
         ball_z_old = self.data.xpos[-1, 2]
-        #print("before a step", self.data.ctrl)
+        #print("before a step touch:")
         # if self.render_mode == "rgb_array":
         #     frame = self.render()
         #     media.show_image(frame)
         a[-2] = a[-2] -50
+        # print("action", a)
+        # print(ob)
         self.do_simulation(a, self.frame_skip)
 
         if self.check_handobject_contact():
@@ -75,72 +132,52 @@ class HandEnv(MujocoEnv, EzPickle):
             # mujoco.mj_step(self.model, self.data,20)
 
             ob = self._get_obs()
-            reward = reward*(self.sensor_mean_weight * np.mean(ob) 
-                        + self.sensor_std_weight * np.std(ob))
+            # print("after step and in contact")
+            # print(ob)
+            reward = reward*(self.sensor_mean_weight * np.mean(ob[0:20]))
+            # if reward > 500:
+            #     print(self.data.contact)
 
-            #print("after step and in contact")
-            # if self.render_mode == "rgb_array":
-            #     frame = self.render()
-            #     media.show_image(frame)
+            #reward = min(reward, 5)
+            #print("touch reward: ", reward)
+            if reward> 500:
+                if self.render_mode == "rgb_array":
+                    frame = self.render()
+                    media.show_image(frame)
 
             hand_z_new = self.data.xpos[7, 2]
             ball_z_new = self.data.xpos[-1, 2]
             
 
             if hand_z_new - hand_z_old<0.05:
+                # print("hand down")
+                # if self.render_mode == "rgb_array":
+                #     frame = self.render()
+                #     media.show_image(frame)
                 info = {"reward_info": reward}
                 return ob, reward, terminated, truncated, info 
             elif hand_z_new-hand_z_old > 0.05 and ((ball_z_new - ball_z_old) / (hand_z_new - hand_z_old))>0.9:
-                reward = reward+((ball_z_new - ball_z_old) / (hand_z_new - hand_z_old))
+                reward = reward+((ball_z_new - ball_z_old) / (hand_z_new - hand_z_old))*10
                 terminated = True
-                if self.render_mode == "rgb_array":
-                    frame = self.render()
-                    media.show_image(frame)
+                # print("good grasp")
+                # if self.render_mode == "rgb_array":
+                #     frame = self.render()
+                #     media.show_image(frame)
                 info = {"reward_info": reward}
                 return ob, reward, terminated, truncated, info
             else:
+                # print("unstable grasp")
+                # if self.render_mode == "rgb_array":
+                #     frame = self.render()
+                #     media.show_image(frame)
                 reward = reward+((ball_z_new - ball_z_old) / (hand_z_new - hand_z_old))
                 info = {"reward_info": reward}
-                return ob, reward, terminated, truncated, info
-            # #case1: hand and ball are both stable in z
-            # if hand_z_new>hand_z_old and (hand_z_new - hand_z_old) <0.1 and (ball_z_new - ball_z_old) <0.1:
-            #     print("case1")
-            #     reward = reward - 2
-            #     info = {"case": "case1", "reward_info": reward}
-            #     # truncation=False as the time limit is handled by the `TimeLimit` wrapper added during `make`
-            #     return ob, reward, terminated, truncated, info
-            
-            # #case2: hand is up, ball is stable in z
-            # elif hand_z_new>hand_z_old and 3 > (hand_z_new - hand_z_old) > 1 and (ball_z_new - ball_z_old) <0.1:
-            #     reward = reward + ((ball_z_new - ball_z_old) / (hand_z_new - hand_z_old))
-            #     print("case2 reward:", reward)
-            #     info = {"case": "case2", "reward_info": reward}
-            #     return ob, reward, terminated, truncated, info
-
-            # #case3: hand is up, ball is up
-            # elif hand_z_new>hand_z_old and 3 > (hand_z_new - hand_z_old) > 1 and 3 > (ball_z_new - ball_z_old) >0.5:
-            #     reward = reward + (ball_z_new - ball_z_old) 
-            #     print("hand and ball z position:", hand_z_new, hand_z_old, ball_z_new, ball_z_old)
-            #     print("good grasp reward:", reward)
-            #     if self.render_mode == "rgb_array":
-            #         frame = self.render()
-            #         media.show_image(frame)
-            #     terminated = True
-            #     info = {"case": "case3", "reward_info": reward}
-            #     return ob, reward, terminated, truncated, info    
-            
-            # #case4: other bad behavior
-            # else:
-            #     print("case 4")
-            #     terminated = True
-            #     reward = -2
-            #     info = {"case": "case4", "reward_info": reward}
-            #     return ob, reward, terminated, truncated, info   
+                return ob, reward, terminated, truncated, info  
 
         else:
             #print("not in contact after step")
             terminated = True
-            reward = -2
+            reward = -0.5
             info = {"case": "case0", "reward_info": reward}
             return ob, reward, terminated, truncated, info   
 
@@ -148,41 +185,15 @@ class HandEnv(MujocoEnv, EzPickle):
             
 
     def reset(self,seed=None,options=None):
-        self._reset_simulation()
-        mujoco.mj_step(self.model, self.data)
-        qpos = self.init_qpos 
-        # qpos[0] = self.init_qpos[0]+ self.np_random.uniform(
-        #     size=1, low=-0.05, high=0
-        # )
-        qpos[1] = self.init_qpos[1]+ self.np_random.uniform(
-            size=1, low=-0.05, high=0.05
-        )
-        qpos[2] = self.init_qpos[2]+ self.np_random.uniform(
-            size=1, low=-0.05, high=0.05
-        )
-        qvel = self.init_qvel
-        self.set_state(qpos, qvel)
-        # while not self.check_handobject_contact():
-        #     self._reset_simulation()
-        #     mujoco.mj_step(self.model, self.data)
-        #     qpos = self.init_qpos 
-        #     qpos[0] = self.init_qpos[0]+ self.np_random.uniform(
-        #         size=1, low=-0.05, high=0
-        #     )
-        #     qpos[1] = self.init_qpos[1]+ self.np_random.uniform(
-        #         size=1, low=-0.05, high=0.05
-        #     )
-        #     qpos[2] = self.init_qpos[2]+ self.np_random.uniform(
-        #         size=1, low=-0.05, high=0.05
-        #     )
-        #     qvel = self.init_qvel
-        #     self.set_state(qpos, qvel)
-        #     print("try reset")
+        self._reset_hand_pose()
+        while not self.check_handobject_contact():
+            self._reset_hand_pose()
+            #print("try reset")
 
-        #     if self.render_mode == "rgb_array":
-        #         frame = self.render()
-        #         media.show_image(frame)
-        print("reset done")
+            # if self.render_mode == "rgb_array":
+            #     frame = self.render()
+            #     media.show_image(frame)
+        #print("reset done")
         # print(self.data.sensordata)
         # if self.render_mode == "rgb_array":
         #     frame = self.render()
@@ -198,11 +209,30 @@ class HandEnv(MujocoEnv, EzPickle):
         
     def check_handobject_contact(self):
         sensordata = self._get_obs()
-        if not(np.all(sensordata==0)) and self.data.xpos[7, 2] > 0.3:
-            # print("contact")
+        if self._check_handobject_contact() and self.data.xpos[7, 2] > 0.3 and not self._check_handtable_contact() and max(sensordata[0:20])<1000:
             return True
         else:
             return False
+    
+    def _reset_hand_pose(self):
+        self._reset_simulation()
+        mujoco.mj_step(self.model, self.data)
+        qpos = self.init_qpos 
+        qpos[1] = self.init_qpos[1]+ self.np_random.uniform(
+            size=1, low=-0.2, high=0.2
+        )
+        qpos[2] = self.init_qpos[2]+ self.np_random.uniform(
+            size=1, low=-0.2, high=0.2
+        )
+        qpos[3] = self.init_qpos[3]+ self.np_random.uniform(
+            size=1, low=-0.3, high=0.3
+        )
+        qpos[5] = self.init_qpos[5]+ self.np_random.uniform(
+            size=1, low=-0.3, high=0.3
+        )
+        qvel = self.init_qvel
+        self.set_state(qpos, qvel)
+
     
     def test_swing_hang(self):
         #self.data.ctrl[-2] = -50
@@ -235,9 +265,30 @@ class HandEnv(MujocoEnv, EzPickle):
             media.show_image(frame)
         #pos, vel = self.save_state()
         return 
-
-
-
     
+    def _check_handtable_contact(self):
+        contact_state = None
+        # Access contact information
+        for i in range(self.data.ncon):
+            # Get the contact object
+            contact = self.data.contact[i]
+            
+            if ((int(contact.geom[0]),int(contact.geom[1])) or (int(contact.geom[1]),int(contact.geom[0]))) in self.handtable_contact_conditions.values():
+                contact_state = True
+                break
+        return contact_state
+    
+    def _check_handobject_contact(self):
+        contact_state = None
+        # Access contact information
+        for i in range(self.data.ncon):
+            # Get the contact object
+            contact = self.data.contact[i]
+            if ((int(contact.geom1),int(contact.geom2)) or (int(contact.geom2),int(contact.geom1))) in self.handobject_contact_conditions.values():
+                contact_state = True
+                break
+        return contact_state
+
+          
 
         

@@ -38,8 +38,8 @@
 
     <!-- ======= TABLE ======= -->
     <body name="table">
-        <geom size="0.5 0.5 0.025" type="plane" material="table2d" friction="2 0.001 0.001"/> 
-        <geom size="4 4 0.025" pos="0 0 -0.025" type="box" material="tablecube" />
+        <geom name="table_surface" size="0.5 0.5 0.025" type="plane" material="table2d" friction="2 0.001 0.001"/> 
+        <geom name="table_surfacebase" size="4 4 0.025" pos="0 0 -0.025" type="box" material="tablecube" />
         <geom size="0.04 0.5" pos="0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder"/>
         <geom size="0.04 0.5" pos="-0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder"/>
         <geom size="0.04 0.5" pos="0.4 -0.4 -0.501" quat="0 1 0 0" type="cylinder"/>
@@ -218,7 +218,7 @@
         <joint name="OBJRx" pos="0 0 0" axis="1 0 0" limited="false" damping="0" />
         <joint name="OBJRy" pos="0 0 0" axis="0 1 0" limited="false" damping="0" />
         <joint name="OBJRz" pos="0 0 0" axis="0 0 1" limited="false" damping="0" />
-        <geom name="object" size="0.3 0.3 0.3" type="box" condim="4" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" friction="3 0.001 0.001"/>
+        <geom name="object" size="0.3 0.3 0.3" type="box" condim="4" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" friction="4 0.001 0.001"/>
     </body>
 
 
@@ -262,12 +262,12 @@
     <position name="act_ring" tendon="ring_tendon" gear="6" ctrlrange="0 1.5" kp="90"/>
     <position name="act_little" tendon="little_tendon" gear="6" ctrlrange="0 1.5" kp="90"/>
     <position name="act_thumb" tendon="thumb_tendon" gear="6" ctrlrange="0 1.5" kp="90"/>
-    <motor name="base_hangZup" joint="hang_moveZup" gear="1000" ctrlrange="-100 200"/>
-    <motor name="base_hangYup" joint="hang_moveYup" gear="20" ctrlrange="-50 50"/>
-    <motor name="base_hangXup" joint="hang_moveXup" gear="20" ctrlrange="-50 50"/>
+    <motor name="base_hangZup" joint="hang_moveZup" gear="1000" ctrlrange="-10 200"/>
+    <motor name="base_hangYup" joint="hang_moveYup" gear="20" ctrlrange="-10 10"/>
+    <motor name="base_hangXup" joint="hang_moveXup" gear="20" ctrlrange="-10 10"/>
     <!-- <motor name="object_moveX" joint="OBJTx" ctrlrange="-1 1"> -->
     <!-- <motor name="object_moveY" joint="OBJTy" ctrlrange="-1 1"/> -->
-    <motor name="base_rotateX" joint="swing_handX" gear="30" ctrlrange="-50 50"/>
+    <motor name="base_rotateX" joint="swing_handX" gear="30" ctrlrange="-60 60"/>
     <motor name="base_rotateY" joint="swing_handY" gear="150" ctrlrange="-60 10"/> 
     <motor name="base_rotateZ" joint="swing_handZ" gear="15" ctrlrange="-60 60"/>
   </actuator>
