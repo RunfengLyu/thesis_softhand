@@ -65,6 +65,12 @@ class HandEnv(MujocoEnv, EzPickle):
         self.n_successful_grasp = 0
         self.n_reset = 0
         self.average_successful_grasp = []
+        self.n_unstable_grasp = 0
+        self.average_unstable_grasp = []
+        self.n_little_move_up = 0
+        self.average_little_move_up = []
+        self.n_lose_contact = 0
+        self.average_lose_contact = []
         
         self.handtable_contact_conditions = {
             "condition0": (self.data.geom('palm2').id,self.data.geom('table_surface').id),
@@ -188,50 +194,52 @@ class HandEnv(MujocoEnv, EzPickle):
                         self.after_graspingphase_qpos = self.data.qpos.copy()
                         self.after_graspingphase_qvel = self.data.qvel.copy()
                         self.phase = 2
+                return ob, reward, terminated, truncated, info 
 
 
 
             elif self.phase==2:
-                if hand_z_new - hand_z_old>=0.01:
-                    reward = (ball_z_new-0.3) *10
-                    if (ball_z_new-0.3) > 0.05 and hand_z_new - 0.6 > 0.2:
-                        reward = (hand_z_new - 0.6)*20
-                        self.n_successful_grasp += 1
-                        terminated = True
-                        #print("nice up")
-                        # if not self.check_hand_contact():
-                        #     terminated = True
-                        # print("nice hand up")
-                        # if self.render_mode == "rgb_array":
-                        #     frame = self.render()
-                        #     media.show_image(frame)
-                        info = {"case": "nice hand up","reward_info": reward}
-                        return ob, reward, terminated, truncated, info 
-                    elif hand_z_new-0.6> 0.2 and ball_z_new-0.3<0.05:
-                        #print("grasping unstable and needs reset")
-                        # if self.render_mode == "rgb_array":
-                        #     frame = self.render()
-                        #     media.show_image(frame)
-                        reward = reward
-                        self.set_state(self.after_graspingphase_qpos, self.after_graspingphase_qvel)
-                        self.after_grasp_phase_try += 1
-                        self.phase=1
-                        if self.after_grasp_phase_try >600:
-                            terminated = True
-                        info = {"case": "grasping unstable and needs reset to grasping end","reward_info": reward}
-                        return ob, reward, terminated, truncated, info  
-                    info={"case": "already up","reward_info": reward}
-                    return ob, reward, terminated, truncated, info     
-                elif hand_z_new-hand_z_old < 0.01 :
+
+                reward = (ball_z_new-0.3) *10
+                if (ball_z_new-0.3) > 0.05 and hand_z_new - 0.6 > 0.1:
+                    reward = (hand_z_new - 0.6)*20 + reward +(self.sensor_mean_weight * np.mean(sensor_new))
+                    self.n_successful_grasp += 1
+                    terminated = True
+                    #print("nice up")
+                    # if not self.check_hand_contact():
+                    #     terminated = True
+                    # print("nice hand up")
+                    # if self.render_mode == "rgb_array":
+                    #     frame = self.render()
+                    #     media.show_image(frame)
+                    info = {"case": "nice hand up","reward_info": reward}
+                    return ob, reward, terminated, truncated, info 
+                # elif hand_z_new-0.6> 0.2 and ball_z_new-0.3<0.05:
+                #     #print("grasping unstable and needs reset")
+                #     # if self.render_mode == "rgb_array":
+                #     #     frame = self.render()
+                #     #     media.show_image(frame)
+                #     self.n_unstable_grasp += 1
+                #     reward = reward + (self.sensor_mean_weight * np.mean(sensor_new))
+                #     self.set_state(self.after_graspingphase_qpos, self.after_graspingphase_qvel)
+                #     self.after_grasp_phase_try += 1
+                #     self.phase=1
+                #     if self.after_grasp_phase_try >600:
+                #         terminated = True
+                #     info = {"case": "grasping unstable and needs reset to grasping end","reward_info": reward}
+                #     return ob, reward, terminated, truncated, info  
+   
+                else:
                     reward = -0.1
                     #terminated = True
+                    self.n_little_move_up += 1
                     #print("move up too little")
                     # if self.render_mode == "rgb_array":
                     #     frame = self.render()
                     #     media.show_image(frame)
                     info = {"case": "move up too little","reward_info": reward}
                     return ob, reward, terminated, truncated, info
-            return ob, reward, terminated, truncated, info
+  
 
         else:
 
@@ -240,9 +248,12 @@ class HandEnv(MujocoEnv, EzPickle):
             #     media.show_image(frame)
             # self.set_state(self.last_contact_qpos, self.last_contact_qvel)
             # self.lose_contact_try += 1
-            # if self.lose_contact_try > 300:
+            # if self.lose_contact_try > 500:
             #     terminated = True
+            # self.phase = 1
             terminated = True
+
+            self.n_lose_contact += 1
             reward = -0.1
             # print("not in contact after step")
             info = {"case": "not in contact", "reward_info": reward}
@@ -267,11 +278,17 @@ class HandEnv(MujocoEnv, EzPickle):
             if self.check_hand_contact(ob,contact):
                 break
         self.n_reset += 1
-        if self.n_reset%500 == 0:
+        if self.n_reset%100== 0:
             #print("number of successful grasp each 500 episode", self.n_successful_grasp/self.n_reset)
             
-            self.average_successful_grasp.append(self.n_successful_grasp/self.n_reset)
+            self.average_successful_grasp.append(self.n_successful_grasp/100)
             self.n_successful_grasp = 0
+            self.average_unstable_grasp.append(self.n_unstable_grasp/100)
+            self.n_unstable_grasp = 0
+            self.average_little_move_up.append(self.n_little_move_up/100)
+            self.n_little_move_up = 0
+            self.average_lose_contact.append(self.n_lose_contact/100)
+            self.n_lose_contact = 0
         return self._get_obs(),{}
 
     def _get_obs(self):
