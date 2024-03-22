@@ -38,7 +38,7 @@
 
     <!-- ======= TABLE ======= -->
     <body name="table">
-        <geom name="table_surface" size="0.5 0.5 0.025" type="plane" material="table2d" friction="2 0.001 0.001"/> 
+        <geom name="table_surface" size="0.5 0.5 0.025" type="plane" material="table2d" friction="1 0.001 0.001"/> 
         <geom name="table_surfacebase" size="4 4 0.025" pos="0 0 -0.025" type="box" material="tablecube" />
         <geom size="0.04 0.5" pos="0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder"/>
         <geom size="0.04 0.5" pos="-0.4 0.4 -0.501" quat="0 1 0 0" type="cylinder"/>
@@ -82,27 +82,27 @@
               <body name="hand" pos="0.8 0 0">
                 <body name="palm_body" pos="-0.15 0 0" euler="0 -0.3 0">
                   <inertial pos="0 0 0" mass="0.009" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
-                  <site name="ipalm_body" pos="0 0 0" size="0.2 0.4 0.15"/>
+                  <site name="ipalm_body" pos="0 0 -0.02" size="0.2 0.4 0.15"/>
                   <geom name="palm" type="sphere" pos="-.15 0 0" size="0.2" condim="4" material="skin" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1"/>
                   <geom name="palm2" type="box" pos=".025 0 0" size="0.175 .4 .1" condim="4" material="skin" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1"/>
                 </body>
 
                 <body name="index_finger" pos="0.2 -0.3 0">
                   <geom name="indexbone" fromto="0 0 0 .4 -.03 0"/>
-                  <site name="i_bone_s" pos=".2 -.03 0" size="0.2 0.1 0.1"/>
+                  <site name="i_bone_s" pos=".2 -.03 -0.02" size="0.2 0.1 0.1"/>
                   <body name="index1" pos=".4 -.03 0" euler="0 0 -.15">
                     <inertial pos="0 0 0" mass="0.005" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
                     <joint name="iMCP" stiffness="3"/>
-                    <site name="iMCP_s" pos=".1 0 0" size="0.1 0.1 0.1"/>
+                    <site name="iMCP_s" pos=".1 0 -0.02" size="0.1 0.1 0.1"/>
                     <geom name="index1g" fromto="0 0 0 .2 0 0"/>
                     <body name="index2" pos=".2 0 0">
                       <inertial pos="0 0 0" mass="0.005" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
-                      <site name="iPIP_s" pos="0.0875 0 0" size="0.0875 0.1 0.1"/>
+                      <site name="iPIP_s" pos="0.0875 0 -0.02" size="0.0875 0.1 0.1"/>
                       <joint name="iPIP" stiffness="3"/>
                       <geom name="index2g" fromto="0 0 0 .175 0 0"/>
                       <body name="index3" pos=".175 0 0">
                         <inertial pos="0 0 0" mass="0.005" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
-                        <site name="iDIP_s" pos=".125 0 0" size="0.125 0.1 0.1"/>
+                        <site name="iDIP_s" pos=".125 0 -0.02" size="0.125 0.1 0.1"/>
                         <joint name="iDIP" stiffness="3"/>
                         <geom name="index3g" fromto="0 0 0 .25 0 0"/>
                       </body>
@@ -113,21 +113,21 @@
 
                 <body name="middle_finger" pos="0.2 -0.1 0">
                   <geom name="middlebone" fromto="0 0 0 .45 -.01 0"/>
-                  <site name="m_bone_s" pos=".22 -.01 0" size="0.22 0.1 0.1"/>
+                  <site name="m_bone_s" pos=".22 -.01 -0.02" size="0.22 0.1 0.1"/>
                   <body name="middle1" pos=".45 -.01 0" euler="0 0 0">
                     <joint name="mMCP"/>
                     <inertial pos="0 0 0" mass="0.005" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
-                    <site name="mMCP_s" pos=".12 0 0" size="0.12 0.1 0.1"/>
+                    <site name="mMCP_s" pos=".12 0 -0.02" size="0.12 0.1 0.1"/>
                     <geom name="middle1g" fromto="0 0 0 .25 0 0"/>
                     <body name="middle2" pos=".25 0 0">
                       <joint name="mPIP"/>
                       <inertial pos="0 0 0" mass="0.005" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
-                      <site name="mPIP_s" pos= ".085 0 0" size="0.085 0.1 0.1"/>
+                      <site name="mPIP_s" pos= ".085 0 -0.02" size="0.085 0.1 0.1"/>
                       <geom name="middle2g" fromto="0 0 0 .175 0 0"/>
                       <body name="middle3" pos=".175 0 0">
                         <joint name="mDIP"/>
                         <inertial pos="0 0 0" mass="0.005" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
-                        <site name="mDIP_s" pos=".125 0 0" size="0.125 0.1 0.1"/>
+                        <site name="mDIP_s" pos=".125 0 -0.02" size="0.125 0.1 0.1"/>
                         <geom name="middle3g" fromto="0 0 0 .25 0 0"/>
                       </body>
                     </body>
@@ -135,20 +135,20 @@
                 </body>
                 <body name="ring_finger" pos="0.2 0.1 0">
                   <geom name="ringbone" fromto="0 0 0 .4 .01 0"/>
-                  <site name="r_bone_s" pos=".2 .005 0" size="0.2 0.1 0.1"/>
+                  <site name="r_bone_s" pos=".2 .005 -0.02" size="0.2 0.1 0.1"/>
                   <body name="ring1" pos=".4 .01 0" euler="0 0 .1">
                     <inertial pos="0 0 0" mass="0.005" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
                     <joint name="rMCP"/>
-                    <site name="rMCP_s" pos=".1 0 0" size="0.1 0.1 0.1"/>
+                    <site name="rMCP_s" pos=".1 0 -0.02" size="0.1 0.1 0.1"/>
                     <geom name="ring1g" fromto="0 0 0 .2 0 0"/>
                     <body name="ring2" pos=".2 0 0">
                       <inertial pos="0 0 0" mass="0.005" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
                       <joint name="rPIP"/>
-                      <site name="rPIP_s" pos="0.0875 0 0"size="0.0875 0.1 0.1"/>
+                      <site name="rPIP_s" pos="0.0875 0 -0.02" size="0.0875 0.1 0.1"/>
                       <geom name="ring2g" fromto="0 0 0 .175 0 0"/>
                       <body name="ring3" pos=".175 0 0">
                         <inertial pos="0 0 0" mass="0.005" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
-                        <site name="rDIP_s" pos="0.125 0 0" size="0.125 0.1 0.1"/>
+                        <site name="rDIP_s" pos="0.125 0 -0.02" size="0.125 0.1 0.1"/>
                         <joint name="rDIP"/>
                         <geom name="ring3g" fromto="0 0 0 .25 0 0"/>
                       </body>
@@ -158,21 +158,21 @@
 
                 <body name="little_finger" pos="0.2 0.3 0">
                   <geom name="littlebone" fromto="0 0 0 .25 .03 0"/>
-                  <site name="l_bone_s" pos=".2 .03 0" size="0.2 0.1 0.1"/>
+                  <site name="l_bone_s" pos=".2 .03 -0.02" size="0.2 0.1 0.1"/>
                   <body name="little1" pos=".25 .03 0" euler="0 0 .2">
                     <inertial pos="0 0 0" mass="0.002" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
                     <joint name="lMCP"/>
-                    <site name="lMCP_s" pos=".1 0 0" size="0.1 0.1 0.1"/>
+                    <site name="lMCP_s" pos=".1 0 -0.02" size="0.1 0.1 0.1"/>
                     <geom name="little1g" fromto="0 0 0 .2 0 0"/>
                     <body name="little2" pos=".2 0 0">
                       <inertial pos="0 0 0" mass="0.002" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
                       <joint name="lPIP"/>
-                      <site name="lPIP_s" pos="0.075 0 0" size="0.075 0.1 0.1"/>
+                      <site name="lPIP_s" pos="0.075 0 -0.02" size="0.075 0.1 0.1"/>
                       <geom name="little2g" fromto="0 0 0 .15 0 0"/>
                       <body name="little3" pos=".15 0 0">
                         <inertial pos="0 0 0" mass="0.002" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
                         <joint name="lDIP"/>
-                        <site name="lDIP_s" pos=".125 0 0" size="0.125 0.1 0.1"/>
+                        <site name="lDIP_s" pos=".125 0 -0.02" size="0.125 0.1 0.1"/>
                         <geom name="little3g" fromto="0 0 0 .25 0 0"/>
                       </body>
                     </body>
@@ -181,21 +181,21 @@
                 <body name="thumb_finger" pos="-.1 -.3 0">
                   <inertial pos="0 0 0" mass="0.001" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
                   <geom name="thumbbone" fromto="0 0 0 .05 .03 0"/>
-                  <site name="t_bone_s" pos="0.025 -0.015 0" size="0.025 0.1 0.1"/>
+                  <site name="t_bone_s" pos="0.025 -0.015 -0.02" size="0.025 0.1 0.1"/>
                   <body name="thumb1" pos="0.05 0.03 0" euler="0 0 -1">
                     <joint name="tMCP"/>
-                    <site name="tMCP_s" pos="0.225 0 0" size="0.225 0.1 0.1"/>
+                    <site name="tMCP_s" pos="0.225 0 -0.02" size="0.225 0.1 0.1"/>
                     <inertial pos="0 0 0" mass="0.006" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
                     <geom name="thumb1g" fromto="0 0 0 .45 0 0"/>
                     <body name="thumb2" pos=".45 0 0">
                       <joint name="tPIP"/>
-                      <site name="tPIP_s" pos="0.175 0 0" size="0.175 0.1 0.1"/>
+                      <site name="tPIP_s" pos="0.175 0 -0.02" size="0.175 0.1 0.1"/>
                       <geom name="thumb2g" fromto="0 0 0 .35 0 0"/>
                       <inertial pos="0 0 0" mass="0.006" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
                       <body name="thumb3" pos=".35 0 0">
                         <inertial pos="0 0 0" mass="0.006" diaginertia="3.2e-07 2.6e-07 2.6e-07"/>
                         <joint name="tDIP"/> 
-                        <site name="tDIP_s" pos=".125 0 0" size="0.125 0.1 0.1"/>
+                        <site name="tDIP_s" pos=".125 0 -0.02" size="0.125 0.1 0.1"/>
                         <geom name="thumb3g" fromto="0 0 0 .25 0 0"/>
                       </body>
                     </body>
@@ -218,7 +218,7 @@
         <joint name="OBJRx" pos="0 0 0" axis="1 0 0" limited="false" damping="0" />
         <joint name="OBJRy" pos="0 0 0" axis="0 1 0" limited="false" damping="0" />
         <joint name="OBJRz" pos="0 0 0" axis="0 0 1" limited="false" damping="0" />
-        <geom name="object" size="0.3 0.3 0.3" type="box" condim="4" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" friction="4 0.001 0.001"/>
+        <geom name="object" size="0.3 0.3 0.3" type="box" condim="4" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" friction="1 0.001 0.001"/>
     </body>
 
 
@@ -257,19 +257,19 @@
 
   <!-- ======= ACTUATOR ======= -->
   <actuator>
-    <position name="act_index" tendon="index_tendon" gear="6" ctrlrange="0 1.5" kp="90"/>
-    <position name="act_middle" tendon="middle_tendon" gear="6" ctrlrange="0 1.5" kp="90"/>
-    <position name="act_ring" tendon="ring_tendon" gear="6" ctrlrange="0 1.5" kp="90"/>
-    <position name="act_little" tendon="little_tendon" gear="6" ctrlrange="0 1.5" kp="90"/>
-    <position name="act_thumb" tendon="thumb_tendon" gear="6" ctrlrange="0 1.5" kp="90"/>
+    <position name="act_index" tendon="index_tendon" gear="6" ctrlrange="0 3" kp="90"/>
+    <position name="act_middle" tendon="middle_tendon" gear="6" ctrlrange="0 3" kp="90"/>
+    <position name="act_ring" tendon="ring_tendon" gear="6" ctrlrange="0 3" kp="90"/>
+    <position name="act_little" tendon="little_tendon" gear="6" ctrlrange="0 3" kp="90"/>
+    <position name="act_thumb" tendon="thumb_tendon" gear="6" ctrlrange="0 3" kp="90"/>
     <motor name="base_hangZup" joint="hang_moveZup" gear="1000" ctrlrange="-10 200"/>
-    <motor name="base_hangYup" joint="hang_moveYup" gear="20" ctrlrange="-10 10"/>
-    <motor name="base_hangXup" joint="hang_moveXup" gear="20" ctrlrange="-10 10"/>
+    <motor name="base_hangYup" joint="hang_moveYup" gear="10" ctrlrange="-10 10"/>
+    <motor name="base_hangXup" joint="hang_moveXup" gear="10" ctrlrange="-10 10"/>
     <!-- <motor name="object_moveX" joint="OBJTx" ctrlrange="-1 1"> -->
     <!-- <motor name="object_moveY" joint="OBJTy" ctrlrange="-1 1"/> -->
-    <motor name="base_rotateX" joint="swing_handX" gear="30" ctrlrange="-60 60"/>
-    <motor name="base_rotateY" joint="swing_handY" gear="150" ctrlrange="-60 10"/> 
-    <motor name="base_rotateZ" joint="swing_handZ" gear="15" ctrlrange="-60 60"/>
+    <motor name="base_rotateX" joint="swing_handX" gear="10" ctrlrange="-10 10"/>
+    <motor name="base_rotateY" joint="swing_handY" gear="100" ctrlrange="-80 10"/> 
+    <motor name="base_rotateZ" joint="swing_handZ" gear="15" ctrlrange="-10 10"/>
   </actuator>
 
   <!-- ======= SENSOR ======= -->
