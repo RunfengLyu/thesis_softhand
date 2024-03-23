@@ -321,16 +321,16 @@ class HandEnv(MujocoEnv, EzPickle):
         #     size=1, low=-0.02, high=0.02
         # )
         qpos[1] = self.np_random.uniform(
-            size=1, low=-0.01, high=0.01
+            size=1, low=-0.2, high=0.2
         )
         qpos[2] = self.np_random.uniform(
-            size=1, low=-0.01, high=0.01
+            size=1, low=-0.2, high=0.2
         )
         qpos[3] = self.np_random.uniform(
-            size=1, low=-0.01, high=0.01
+            size=1, low=-0.2, high=0.2
         )
         qpos[5] = self.np_random.uniform(
-            size=1, low=-0.01, high=0.01
+            size=1, low=-0.2, high=0.2
         )
         qvel = np.zeros(27)
         self.set_state(qpos, qvel)
