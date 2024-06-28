@@ -28,7 +28,7 @@ class HandEnv(MujocoEnv, EzPickle):
 
     def __init__(self, **kwargs):
 
-        observation_space = Box(low=-np.inf, high=np.inf, shape=(76,), dtype=np.float64)
+        observation_space = Box(low=-np.inf, high=np.inf, shape=(75,), dtype=np.float64)
         xml_file_path = path.join(
             path.dirname(path.realpath(__file__)),
             "assets/finger_model.xml",
@@ -245,16 +245,17 @@ class HandEnv(MujocoEnv, EzPickle):
 
             # if self.render_mode == "rgb_array":
             #     frame = self.render()
-            #     media.show_image(frame)
+            # #     media.show_image(frame)
             # self.set_state(self.last_contact_qpos, self.last_contact_qvel)
             # self.lose_contact_try += 1
-            # if self.lose_contact_try > 500:
+            # if self.lose_contact_try > 1500:
             #     terminated = True
             # self.phase = 1
-            terminated = True
+            
 
             self.n_lose_contact += 1
             reward = -0.1
+            terminated = True
             # print("not in contact after step")
             info = {"case": "not in contact", "reward_info": reward}
             return ob, reward, terminated, truncated, info   
@@ -299,7 +300,7 @@ class HandEnv(MujocoEnv, EzPickle):
         relative_hand_object = np.array(math.sqrt((self.data.xpos[7, 0] - self.data.xpos[-1, 0])**2 
                                          + (self.data.xpos[7, 1] - self.data.xpos[-1, 1])**2 
                                          + (self.data.xpos[7, 2] - self.data.xpos[-1, 2])**2)).reshape(1,)
-        return np.concatenate((sensor_matrix, position_exclude_hand, velocity_exclude_hand, np.array(self.data.qpos[0].reshape(1,))))
+        return np.concatenate((sensor_matrix,position_exclude_hand, velocity_exclude_hand))
   
         
     def check_hand_contact(self,ob,contact):

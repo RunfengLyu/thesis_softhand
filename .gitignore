@@ -162,3 +162,8 @@ cython_debug/
 *.zip
 
 MUJOCO_LOG.TXT
+
+softhand_sim/notebooks/
+softhand_sim/logs_sum/
+softhand_sim/images/
+softhnad_sim/trained_models/
