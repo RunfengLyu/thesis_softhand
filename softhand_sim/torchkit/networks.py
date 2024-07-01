@@ -58,6 +58,7 @@ class Mlp(PyTorchModule):
             self.__setattr__("fc{}".format(i), fc)
             self.fcs.append(fc)
 
+
             if self.layer_norm:
                 ln = LayerNorm(next_size)
                 self.__setattr__("layer_norm{}".format(i), ln)
@@ -91,19 +92,19 @@ class FlattenMlp(Mlp):
         flat_inputs = torch.cat(inputs, dim=-1)
         return super().forward(flat_inputs, **kwargs)
     
-class SequentialMlp(Mlp):
+# class SequentialMlp(Mlp):
 
-    def forward(self,*inputs, **kwargs):
-        model = nn.Sequential(
-                nn.Linear(in_features=75, out_features=400, bias=True),
-                nn.ReLU(),
-                nn.Linear(in_features=400, out_features=300, bias=True),
-                nn.ReLU(),
-                nn.Linear(in_features=300, out_features=11, bias=True),
-                nn.Tanh()
-            )
-        seq_inputs = model(inputs)
-        return super().forward(seq_inputs, **kwargs)
+#     def forward(self,*inputs, **kwargs):
+#         model = nn.Sequential(
+#                 nn.Linear(in_features=64, out_features=400, bias=True),
+#                 nn.ReLU(),
+#                 nn.Linear(in_features=400, out_features=300, bias=True),
+#                 nn.ReLU(),
+#                 nn.Linear(in_features=300, out_features=1, bias=True),
+#                 nn.Tanh()
+#             )
+#         seq_inputs = model(inputs)
+#         return super().forward(seq_inputs, **kwargs)
 
 def conv_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1):
     """

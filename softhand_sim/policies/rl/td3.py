@@ -1,7 +1,7 @@
 import torch
 from .base import RLAlgorithmBase
 from softhand_sim.policies.models.actor import DeterministicPolicy
-from softhand_sim.torchkit.networks import FlattenMlp,SequentialMlp
+from softhand_sim.torchkit.networks import FlattenMlp
 
 
 class TD3(RLAlgorithmBase):
@@ -21,8 +21,8 @@ class TD3(RLAlgorithmBase):
         qf1 = FlattenMlp(
             input_size=input_size, output_size=1, hidden_sizes=hidden_sizes
         )
-        qf2= SequentialMlp(
-            input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
+        qf2 = FlattenMlp(
+            input_size=input_size, output_size=1, hidden_sizes=hidden_sizes
         )
         return qf1, qf2
 
@@ -33,7 +33,7 @@ class TD3(RLAlgorithmBase):
         qf1 = FlattenMlp(
             input_size=input_size, output_size=1, hidden_sizes=hidden_sizes
         )
-        qf2 = SequentialMlp(
+        qf2 = FlattenMlp(
             input_size=input_size, output_size=1, hidden_sizes=hidden_sizes
         )
         return qf1, qf2

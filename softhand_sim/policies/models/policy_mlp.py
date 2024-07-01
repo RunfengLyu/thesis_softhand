@@ -17,7 +17,6 @@ class ModelFreeOffPolicy_MLP(nn.Module):
     """
     standard off-policy Markovian Policy using MLP
     including TD3 and SAC
-    NOTE: it can only solve MDP problem, not POMDPs
     """
 
     ARCH = "markov"
@@ -42,6 +41,9 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         self.action_dim = action_dim
         self.gamma = gamma
         self.tau = tau
+        self.num_layers = policy_layers[0]
+        
+        self.hidden_size = dqn_layers[0]
 
         self.algo = SAC(**kwargs, action_dim=action_dim)
 
@@ -68,17 +70,34 @@ class ModelFreeOffPolicy_MLP(nn.Module):
         self.policy_target = copy.deepcopy(self.policy)
 
     @torch.no_grad()
+    def get_initial_info(self):
+        # here we assume batch_size = 1
+
+        ## here we set the ndim = 2 for action and reward for compatibility
+
+        prev_action = ptu.zeros((1, self.action_dim)).float()
+        reward = ptu.zeros((1, 1)).float()
+        #hidden_state = ptu.zeros((self.num_layers, 1, self.hidden_size)).float()
+        cell_state = ptu.zeros((self.num_layers, 1, self.hidden_size)).float()
+        #internal_state = (hidden_state.to(device='cuda'), cell_state.to(device='cuda'))
+
+        return prev_action, reward
+
+    @torch.no_grad()
     def act(self, obs, deterministic=False, return_log_prob=False):
         return self.algo.select_action(
             actor=self.policy,
             observ=obs,
             deterministic=deterministic,
-            return_log_prob=return_log_prob,
+            return_log_prob=return_log_prob
         )
-
+    
+    
     def update(self, batch):
         observs, next_observs = batch["obs"], batch["obs2"]  # (B, dim)
         actions, rewards, dones = batch["act"], batch["rew"], batch["term"]  # (B, dim)
+        
+        #print("update actions", actions)
 
         ### 1. Critic loss
         (q1_pred, q2_pred), q_target = self.algo.critic_loss(
@@ -109,7 +128,7 @@ class ModelFreeOffPolicy_MLP(nn.Module):
 
         # soft update
         self.soft_target_update()
-
+        #print("here")
         ### 2. Actor loss
         policy_loss, log_probs = self.algo.actor_loss(
             markov_actor=self.Markov_Actor,
@@ -119,6 +138,8 @@ class ModelFreeOffPolicy_MLP(nn.Module):
             critic=(self.qf1, self.qf2),
             critic_target=(self.qf1_target, self.qf2_target),
             observs=observs,
+            actions = actions,
+            rewards=rewards
         )
         policy_loss = policy_loss.mean()
 

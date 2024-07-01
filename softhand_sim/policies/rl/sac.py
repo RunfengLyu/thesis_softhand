@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.optim import Adam
 from .base import RLAlgorithmBase
 from softhand_sim.policies.models.actor import TanhGaussianPolicy
-from softhand_sim.torchkit.networks import FlattenMlp,SequentialMlp
+from softhand_sim.torchkit.networks import FlattenMlp
 import softhand_sim.torchkit.pytorch_utils as ptu
 
 
@@ -50,13 +50,8 @@ class SAC(RLAlgorithmBase):
 
     @staticmethod
     def build_actor(input_size, action_dim, hidden_sizes, **kwargs):
-        qf1 = FlattenMlp(
-            input_size=input_size, output_size=1, hidden_sizes=hidden_sizes
-        )
-        qf2= SequentialMlp(
-            input_size=input_size, output_size=action_dim, hidden_sizes=hidden_sizes
-        )
-        return qf1, qf2
+        actor = TanhGaussianPolicy(obs_dim = input_size, action_dim = action_dim, hidden_sizes = hidden_sizes)
+        return actor
 
     @staticmethod
     def build_critic(hidden_sizes, input_size=None, obs_dim=None, action_dim=None):
@@ -65,7 +60,7 @@ class SAC(RLAlgorithmBase):
         qf1 = FlattenMlp(
             input_size=input_size, output_size=1, hidden_sizes=hidden_sizes
         )
-        qf2 = SequentialMlp(
+        qf2 = FlattenMlp(
             input_size=input_size, output_size=1, hidden_sizes=hidden_sizes
         )
         return qf1, qf2
@@ -158,6 +153,7 @@ class SAC(RLAlgorithmBase):
         actions=None,
         rewards=None,
     ):
+        #print("actor acctions", actions)
         actions = actions.to(device='cuda')
         rewards = rewards.to(device='cuda')
         observs = observs.to(device='cuda')

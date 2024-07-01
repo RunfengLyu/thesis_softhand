@@ -109,6 +109,8 @@ class TanhGaussianPolicy(MarkovPolicyBase):
 
         self.log_std = None
         self.std = std
+        self.lower_bounds = torch.tensor([0, 0, 0, 0, 0, -10, -10, -10, -10, -80, -10], dtype=torch.float32)
+        self.upper_bounds = torch.tensor([3, 3, 3, 3, 3, 200, 10, 10, 10, 10, 10], dtype=torch.float32)
         if std is None:  # learn std
             last_hidden_size = self.input_size
             if len(hidden_sizes) > 0:
@@ -148,6 +150,7 @@ class TanhGaussianPolicy(MarkovPolicyBase):
         log_prob = None
         if deterministic:
             action = torch.tanh(mean)
+            action_scaled = (((action + 1) * (self.upper_bounds - self.lower_bounds) / 2) + self.lower_bounds).to(device='cuda')
             assert (
                 return_log_prob == False
             )  # NOTE: cannot be used for estimating entropy
@@ -169,8 +172,11 @@ class TanhGaussianPolicy(MarkovPolicyBase):
                     action = tanh_normal.rsample()
                 else:
                     action = tanh_normal.sample()
-
-        return action, mean, log_std, log_prob
+            self.upper_bounds = self.upper_bounds.to(device='cuda')
+            self.lower_bounds = self.lower_bounds.to(device='cuda') 
+            action_scaled = (((action+ 1) * (self.upper_bounds - self.lower_bounds) / 2) + self.lower_bounds).to(device='cuda')
+            
+        return action_scaled, mean, log_std, log_prob
 
 
 class CategoricalPolicy(MarkovPolicyBase):
